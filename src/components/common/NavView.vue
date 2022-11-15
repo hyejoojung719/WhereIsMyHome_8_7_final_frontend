@@ -1,45 +1,27 @@
 <template>
-  <v-app-bar color="deep-purple accent-4" dense dark>
-    <v-app-bar-nav-icon></v-app-bar-nav-icon>
-
-    <v-toolbar-title>Page title</v-toolbar-title>
+  <v-app-bar color="primary accent-4" dense dark>
+    <router-link :to="{ name: 'main' }"
+      ><v-img src="@/assets/img/logo2.png" width="90px" class="ml-5"></v-img
+    ></router-link>
 
     <v-spacer></v-spacer>
-
-    <v-btn icon>
-      <v-icon>mdi-heart</v-icon>
-    </v-btn>
-
-    <v-btn icon>
-      <v-icon>mdi-magnify</v-icon>
-    </v-btn>
-
-    <v-menu left bottom>
-      <template v-slot:activator="{ on, attrs }">
-        <v-btn icon v-bind="attrs" v-on="on">
-          <v-icon>mdi-dots-vertical</v-icon>
-        </v-btn>
-      </template>
-
-      <v-list>
-        <v-list-item v-for="n in 5" :key="n" @click="() => {}">
-          <v-list-item-title>Option {{ n }}</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-menu>
+    <router-link :to="{ name: 'map' }"> <span class="white--text px-5">실거래가 조회</span> </router-link>
+    <router-link :to="{ name: 'home' }"> <span class="white--text px-5">부동산 뉴스</span> </router-link>
+    <router-link :to="{ name: 'home' }"> <span class="white--text px-5">로그인</span> </router-link>
   </v-app-bar>
 </template>
 
 <script>
 export default {
-  data() {
-    return {
-      menuItems: [
-        { title: "Home", path: "/home" },
-        { title: "Sign Up", path: "/signup" },
-        { title: "Sign In", path: "/signin" },
-      ],
-    };
-  },
+  data() {},
 };
 </script>
+
+<style scoped>
+a {
+  text-decoration: none !important;
+}
+a:hover {
+  text-decoration: none !important;
+}
+</style>
