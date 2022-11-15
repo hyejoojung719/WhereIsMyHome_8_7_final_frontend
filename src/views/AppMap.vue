@@ -1,9 +1,17 @@
 <template>
-  <div>지도</div>
+  <v-app>
+    <SearchView />
+  </v-app>
 </template>
 
 <script>
-export default {};
+import SearchView from "@/components/map/SearchView.vue";
+
+export default {
+  components: {
+    SearchView,
+  },
+};
 </script>
 
 <style></style>

@@ -21,4 +21,10 @@ export default {
 ::v-deep .v-application--wrap {
   min-height: fit-content;
 }
+::v-deep .v-text-field__details {
+  min-height: 0px;
+}
+::v-deep .v-messages {
+  min-height: 0px;
+}
 </style>
