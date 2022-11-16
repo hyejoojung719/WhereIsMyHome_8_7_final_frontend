@@ -20,9 +20,9 @@ const routes = [
     component: () => import("@/views/AppUser.vue"),
     children: [
       {
-        path: "/login",
-        name: "userLogin",
-        component: () => import("@/component/user/UserLogin.vue"),
+        path: "/signIn",
+        name: "userSignIn",
+        component: () => import("@/components/user/UserSignIn.vue"),
       },
     ],
   },
