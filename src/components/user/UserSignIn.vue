@@ -1,9 +1,9 @@
 <template>
-  <v-container fluid class="pa-0 ma-0" style="max-height: 800px">
+  <v-container fluid class="pa-0 ma-0" style="max-height: 100vh">
     <v-row class="relative ma-0" style="height: 100%" no-gutters>
       <v-col class="white" style="height: 100%" cols="4"> </v-col>
       <v-col class="white" style="height: 100%" cols="8"
-        ><v-img src="@/assets/img/background1.jpg" style="height: 100%"></v-img
+        ><v-img src="@/assets/img/background2.jpg" style="height: 100%"></v-img
       ></v-col>
       <v-card
         class="absolute rounded-xl"
@@ -14,9 +14,7 @@
         <v-form text-align>
           <v-col class="pa-10">
             <v-row style="height: 20px"> </v-row>
-            <v-row
-              ><v-img class="logo" src="@/assets/img/logo1.png"></v-img
-            ></v-row>
+            <v-row><v-img class="logo" src="@/assets/img/logo1.png"></v-img></v-row>
             <v-row
               ><v-text-field
                 v-model="signinInfo.user_id"
@@ -44,11 +42,7 @@
               ></v-text-field>
             </v-row>
             <v-row>
-              <v-checkbox
-                v-model="checkbox"
-                class="ma-0"
-                label="이메일 저장"
-              ></v-checkbox>
+              <v-checkbox v-model="checkbox" class="ma-0" label="이메일 저장"></v-checkbox>
             </v-row>
             <v-row>
               <v-btn class="white--text" block color="primary"> 로그인 </v-btn>
@@ -82,13 +76,16 @@ export default {
       ],
       passwordRules: [
         (v) => !!v || "비밀번호를 입력하세요.",
-        (v) => v.length() <= 15 || "비밀번호는 8자 이상 15자 이하입니다.",
+        (v) => (v && v.length <= 15) || "비밀번호는 8자 이상 15자 이하입니다.",
       ],
       signinInfo: {},
     };
   },
   computed: {
     ...mapState("userStore", ["userInfo"]),
+    getLength() {
+      return this.signinInfo.user_password.length();
+    },
   },
   methods: {
     async signin() {
