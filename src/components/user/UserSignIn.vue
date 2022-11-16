@@ -45,7 +45,7 @@
               <v-checkbox v-model="checkbox" class="ma-0" label="이메일 저장"></v-checkbox>
             </v-row>
             <v-row>
-              <v-btn class="white--text" block color="primary"> 로그인 </v-btn>
+              <v-btn class="white--text" block color="primary" @click="signin"> 로그인 </v-btn>
             </v-row>
             <v-row>
               <v-btn block class="yellow"> 카카오 로그인</v-btn>

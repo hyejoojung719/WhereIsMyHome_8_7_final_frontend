@@ -19,8 +19,8 @@ const userStore = {
   },
   actions: {
     async signIn({ commit }, signinInfo) {
-      console.log(commit);
-      let { data } = await http.post("/users/signin", signinInfo);
+      console.log(signinInfo);
+      let { data } = await http.post("/users/signIn", signinInfo);
 
       let token = data.token;
       console.log("발급받은 토큰 : ", token);
