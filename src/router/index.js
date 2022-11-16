@@ -19,25 +19,20 @@ const routes = [
         name: "apartList",
         component: () => import("@/components/map/ApartListView.vue"),
       },
+    ],
+  },
+  {
+    path: "/user",
+    name: "user",
+    component: () => import("@/views/AppUser.vue"),
+    children: [
       {
-        path: "/signIn",
+        path: "/signin",
         name: "userSignIn",
         component: () => import("@/components/user/UserSignIn.vue"),
       },
     ],
   },
-  // {
-  //   path: "/user",
-  //   name: "user",
-  //   component: () => import("@/views/AppUser.vue"),
-  //   children: [
-  //     {
-  //       path: "/login",
-  //       name: "userLogin",
-  //       component: () => import("@/component/user/UserLogin.vue"),
-  //     },
-  //   ],
-  // },
 ];
 
 const router = new VueRouter({

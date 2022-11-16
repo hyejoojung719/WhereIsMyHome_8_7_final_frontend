@@ -18,7 +18,7 @@ const userStore = {
     },
   },
   actions: {
-    async signIn({ commit } /*signinInfo*/) {
+    async signIn({ commit }, signinInfo) {
       console.log(commit);
       let { data } = await http.post("/users/signin", signinInfo);
 
