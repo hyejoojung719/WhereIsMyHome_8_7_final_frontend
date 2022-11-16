@@ -19,6 +19,11 @@ const routes = [
         name: "apartList",
         component: () => import("@/components/map/ApartListView.vue"),
       },
+      {
+        path: "/signIn",
+        name: "userSignIn",
+        component: () => import("@/components/user/UserSignIn.vue"),
+      },
     ],
   },
   // {
