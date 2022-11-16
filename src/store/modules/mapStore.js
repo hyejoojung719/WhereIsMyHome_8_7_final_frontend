@@ -1,15 +1,12 @@
 import http from "@/util/http";
-import router from "@/router";
+// import router from "@/router";
 
 const mapStore = {
   state: () => ({
-    /////////////////////////////// House /////////////////////////////////////
     sidos: [{ value: null, text: "선택하세요" }],
-    /////////////////////////////// House end /////////////////////////////////////
   }),
   getters: {},
   mutations: {
-    /////////////////////////////// House ////////////////////////////////////
     SET_SIDO_LIST(state, sidos) {
       sidos.forEach((sido) => {
         state.sidos.push({ value: sido.sidoCode, text: sido.sidoName });
@@ -18,10 +15,8 @@ const mapStore = {
     CLEAR_SIDO_LIST(state) {
       state.sidos = [{ value: null, text: "선택하세요" }];
     },
-    /////////////////////////////// House end /////////////////////////////////////
   },
   actions: {
-    /////////////////////////////// House start /////////////////////////////////////
     async getSido({ commit }) {
       try {
         let { data } = await http.get(`/sido`);
@@ -70,7 +65,6 @@ const mapStore = {
       // console.log(commit, house);
       commit("SET_DETAIL_HOUSE", house);
     },
-    /////////////////////////////// House end /////////////////////////////////////
   },
 };
 
