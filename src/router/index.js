@@ -13,12 +13,12 @@ const routes = [
     path: "/map",
     name: "map",
     component: () => import("@/views/AppMap.vue"),
-  },
-  {
-    path: "/user",
-    name: "user",
-    component: () => import("@/views/AppUser.vue"),
     children: [
+      {
+        path: "apartList",
+        name: "apartList",
+        component: () => import("@/components/map/ApartListView.vue"),
+      },
       {
         path: "/signIn",
         name: "userSignIn",
@@ -26,6 +26,18 @@ const routes = [
       },
     ],
   },
+  // {
+  //   path: "/user",
+  //   name: "user",
+  //   component: () => import("@/views/AppUser.vue"),
+  //   children: [
+  //     {
+  //       path: "/login",
+  //       name: "userLogin",
+  //       component: () => import("@/component/user/UserLogin.vue"),
+  //     },
+  //   ],
+  // },
 ];
 
 const router = new VueRouter({

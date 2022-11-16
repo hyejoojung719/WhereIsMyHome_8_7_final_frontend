@@ -2,68 +2,94 @@ import http from "@/util/http";
 // import router from "@/router";
 
 const mapStore = {
+  namespaced: true,
   state: () => ({
-    sidos: [{ value: null, text: "선택하세요" }],
+    sidos: [{ value: null, text: "시/도" }],
+    guguns: [{ value: null, text: "구/군" }],
+    dongs: [{ value: null, text: "동" }],
+    houses: [],
   }),
   getters: {},
   mutations: {
+    // state 셋팅
     SET_SIDO_LIST(state, sidos) {
       sidos.forEach((sido) => {
-        state.sidos.push({ value: sido.sidoCode, text: sido.sidoName });
+        state.sidos.push({ value: sido.dongCode, text: sido.sidoName });
       });
     },
+    SET_GUGUN_LIST(state, guguns) {
+      guguns.forEach((gugun) => {
+        state.guguns.push({ value: gugun.dongCode, text: gugun.gugunName });
+      });
+    },
+    SET_DONG_LIST(state, dongs) {
+      dongs.forEach((dong) => {
+        state.dongs.push({ value: dong.dongCode, text: dong.dongName });
+      });
+    },
+    SET_HOUSE_LIST(state, houses) {
+      state.houses = houses;
+    },
+
+    // 리스트 초기화
     CLEAR_SIDO_LIST(state) {
-      state.sidos = [{ value: null, text: "선택하세요" }];
+      state.sidos = [{ value: null, text: "시/도" }];
+    },
+    CLEAR_GUGUN_LIST(state) {
+      state.guguns = [{ value: null, text: "구/군" }];
+    },
+    CLEAR_DONG_LIST(state) {
+      state.dongs = [{ value: null, text: "동" }];
+    },
+    CLEAR_HOUSE_LIST(state) {
+      state.houses = [];
     },
   },
   actions: {
+    // sido 정보 가져오기
     async getSido({ commit }) {
       try {
-        let { data } = await http.get(`/sido`);
+        let { data } = await http.get(`dong/sido`);
         commit("SET_SIDO_LIST", data);
       } catch (error) {
         console.log(error);
       }
     },
-    getGugun({ commit }, sidoCode) {
+
+    // gugun 정보 가져오기
+    async getGugun({ commit }, sidoCode) {
       const params = { sido: sidoCode };
-      http
-        .get(`/map/gugun`, { params })
-        .then(({ data }) => {
-          commit("SET_GUGUN_LIST", data);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      try {
+        let { data } = await http.get(`/dong/gugun`, { params });
+        commit("SET_GUGUN_LIST", data);
+      } catch (error) {
+        console.log(error);
+      }
     },
-    getHouseList({ commit }, gugunCode) {
-      // vue cli enviroment variables 검색
-      //.env.local file 생성.
-      // 반드시 VUE_APP으로 시작해야 한다.
-      const SERVICE_KEY = process.env.VUE_APP_APT_DEAL_API_KEY;
-      // const SERVICE_KEY =
-      //   "######################## Service Key ########################";
-      const SERVICE_URL =
-        "http://openapi.molit.go.kr/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTradeDev";
+
+    // dong 정보 가져오기
+    async getDong({ commit }, gugunCode) {
+      const params = { gugun: gugunCode };
+      try {
+        let { data } = await http.get(`/dong/dong`, { params });
+        commit("SET_DONG_LIST", data);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    // 아파트 정보 가져오기
+    async getHouseList({ commit }, searchInfo) {
       const params = {
-        LAWD_CD: gugunCode,
-        DEAL_YMD: "202207",
-        serviceKey: decodeURIComponent(SERVICE_KEY),
+        dongCode: searchInfo.dongCode.substr(0, 8),
       };
-      http
-        .get(SERVICE_URL, { params })
-        .then(({ data }) => {
-          // console.log(commit, data);
-          commit("SET_HOUSE_LIST", data.response.body.items.item);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    },
-    detailHouse({ commit }, house) {
-      // 나중에 house.일련번호를 이용하여 API 호출
-      // console.log(commit, house);
-      commit("SET_DETAIL_HOUSE", house);
+
+      try {
+        let { data } = await http.get(`/apart/apartInfo`, { params });
+        commit("SET_HOUSE_LIST", data);
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
 };
