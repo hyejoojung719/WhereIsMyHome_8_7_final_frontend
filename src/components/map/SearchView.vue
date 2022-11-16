@@ -4,10 +4,20 @@
       <v-container fluid>
         <v-row align="center">
           <v-col class="d-flex" sm="3">
-            <v-select v-model="sidoCode" :items="sidos" @change="gugunList" solo></v-select>
+            <v-select
+              v-model="sidoCode"
+              :items="sidos"
+              @change="gugunList"
+              solo
+            ></v-select>
           </v-col>
           <v-col class="d-flex" sm="2">
-            <v-select v-model="gugunCode" :items="guguns" @change="dongList" solo></v-select>
+            <v-select
+              v-model="gugunCode"
+              :items="guguns"
+              @change="dongList"
+              solo
+            ></v-select>
           </v-col>
           <v-col class="d-flex" sm="2">
             <v-select v-model="dongCode" :items="dongs" solo></v-select>
@@ -49,8 +59,19 @@ export default {
     this.getSido(); // 시도 정보 가져오기
   },
   methods: {
-    ...mapActions("mapStore", ["getSido", "getGugun", "getDong", "getHouseList"]),
-    ...mapMutations("mapStore", ["CLEAR_SIDO_LIST", "CLEAR_GUGUN_LIST", "CLEAR_DONG_LIST", "CLEAR_HOUSE_LIST"]),
+    ...mapActions("mapStore", [
+      "getSido",
+      "getGugun",
+      "getDong",
+      "getHouseList",
+      "setMarkers",
+    ]),
+    ...mapMutations("mapStore", [
+      "CLEAR_SIDO_LIST",
+      "CLEAR_GUGUN_LIST",
+      "CLEAR_DONG_LIST",
+      "CLEAR_HOUSE_LIST",
+    ]),
 
     // 구군 정보 가져오기
     gugunList() {
@@ -79,6 +100,8 @@ export default {
 
       if (this.dongCode) {
         await this.getHouseList(searchInfo);
+        console.log(this.house);
+        this.setMarkers();
       }
 
       if (!(this.houses[0] && this.houses[0].length != 0)) {

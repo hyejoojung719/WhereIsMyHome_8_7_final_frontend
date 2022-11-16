@@ -8,6 +8,7 @@ const mapStore = {
     guguns: [{ value: null, text: "구/군" }],
     dongs: [{ value: null, text: "동" }],
     houses: [],
+    markers: [],
   }),
   getters: {},
   mutations: {
@@ -30,6 +31,9 @@ const mapStore = {
     SET_HOUSE_LIST(state, houses) {
       state.houses = houses;
     },
+    // SET_MARKERS_LIST(state, markers) {
+    //   state.markers = markers;
+    // },
 
     // 리스트 초기화
     CLEAR_SIDO_LIST(state) {
@@ -44,6 +48,9 @@ const mapStore = {
     CLEAR_HOUSE_LIST(state) {
       state.houses = [];
     },
+    // CLEAR_MARKERS_LIST(state) {
+    //   state.markers = [];
+    // },
   },
   actions: {
     // sido 정보 가져오기
@@ -89,6 +96,44 @@ const mapStore = {
         commit("SET_HOUSE_LIST", data);
       } catch (error) {
         console.log(error);
+      }
+    },
+
+    // markers 위치 셋팅하기
+    setMarkers() {
+      // 기존 마커 표시 제거하기
+      /* global kakao */
+      // console.log("markers 길이 : ", this.markers.length);
+      // if (this.markers.length > 0) {
+      //   this.markers.forEach((marker) => marker.setMap(null));
+      // }
+      console.log(this.houses);
+
+      for (let i = 0; i < this.houses[0].length; i++) {
+        let lng = this.houses[0][i].lng;
+        let lat = this.houses[0][i].lat;
+        this.markers.push([parseFloat(lat), parseFloat(lng)]);
+      }
+
+      const positions = this.markers.map(
+        (position) => new kakao.maps.LatLng(...position)
+      );
+
+      if (positions.length > 0) {
+        this.markers = positions.map(
+          (position) =>
+            new kakao.maps.Marker({
+              map: this.map,
+              position,
+            })
+        );
+
+        const bounds = positions.reduce(
+          (bounds, latlng) => bounds.extend(latlng),
+          new kakao.maps.LatLngBounds()
+        );
+
+        this.map.setBounds(bounds);
       }
     },
   },
