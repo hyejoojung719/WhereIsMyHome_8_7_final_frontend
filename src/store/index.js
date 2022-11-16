@@ -2,6 +2,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 
 import mapStore from "@/store/modules/mapStore.js";
+import userStore from "@/store/modules/userStore.js";
 
 import { createVuexPersistedState } from "vue-persistedstate";
 
@@ -14,5 +15,5 @@ export default new Vuex.Store({
     }),
   ],
 
-  modules: { mapStore },
+  modules: { mapStore, userStore },
 });
