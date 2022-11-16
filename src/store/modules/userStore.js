@@ -1,5 +1,5 @@
 import http from "@/util/http";
-import router from "@/router";
+// import router from "@/router";
 
 const userStore = {
   state: () => ({
@@ -12,7 +12,7 @@ const userStore = {
     },
   },
   actions: {
-    async signIn({ commit }, signinInfo) {
+    async signIn({ commit } /*signinInfo*/) {
       console.log(commit);
       let { data } = await http.post("/users/signin");
 
