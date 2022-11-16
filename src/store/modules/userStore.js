@@ -3,14 +3,15 @@ import http from "@/util/http";
 import jwt_decode from "jwt-decode";
 
 const userStore = {
+  namespaced: true,
   state: () => ({
-    token: null,
     userInfo: {}, //로그인한 유저 정보
+    token: null,
   }),
   getters: {},
   mutations: {
     SET_USER_INFO(state, payload) {
-      state.userInfo = payload.id;
+      state.userInfo = payload;
     },
     SET_TOKEN(state, payload) {
       state.token = payload.token;
@@ -35,7 +36,7 @@ const userStore = {
 
       //vuex에 userInfo 정보 저장
       const { id } = decodedToken;
-      commit("SET_USER_INFO", { id });
+      commit("SET_USER_INFO", { id: id });
     },
     signOut({ commit }) {
       //userStore에 token 정보 지우기
