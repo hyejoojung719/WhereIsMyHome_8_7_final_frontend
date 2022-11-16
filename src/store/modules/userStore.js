@@ -1,9 +1,6 @@
 import http from "@/util/http";
 // import router from "@/router";
-<<<<<<< HEAD
-=======
 import jwt_decode from "jwt-decode";
->>>>>>> 7d209aee57ab230a2caa1e0e3823bd8f8c89de0e
 
 const userStore = {
   state: () => ({
