@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="pa-0 ma-0" style="max-height: 100vh">
+  <v-container fluid class="pa-0 ma-0" style="max-height: 90vh">
     <v-row class="relative ma-0" style="height: 100%" no-gutters>
       <v-col class="white" style="height: 100%" cols="4"> </v-col>
       <v-col class="white" style="height: 100%" cols="8"
@@ -47,7 +47,7 @@
             </v-row>
             <v-row class="text-center">
               <v-btn class="btns" text>이메일 찾기</v-btn> | <v-btn class="btns" text>비밀번호 찾기</v-btn> |
-              <v-btn class="btns" text>회원가입</v-btn>
+              <v-btn class="btns" text :to="{ name: 'userSignUp' }">회원가입</v-btn>
             </v-row>
           </v-col>
         </v-form>
@@ -67,16 +67,16 @@ export default {
   data() {
     return {
       passwordShow: false,
-      emailRules: [(v) => !!v || "이메일을 입력하세요.", (v) => /.+@.+/.test(v) || "올바르지 않은 이메일입니다."],
-      passwordRules: [
-        (v) => !!v || "비밀번호를 입력하세요.",
-        (v) => (v && v.length >= 8 && v.length <= 15) || "비밀번호는 8자 이상 15자 이하입니다.",
-      ],
       signinInfo: {},
     };
   },
   computed: {
-    ...mapState("userStore", { userInfo: "userInfo", saveUserId: "saveUserId" }),
+    ...mapState("userStore", {
+      userInfo: "userInfo",
+      saveUserId: "saveUserId",
+      emailRules: "emailRules",
+      passwordRules: "passwordRules",
+    }),
   },
   methods: {
     async signin() {

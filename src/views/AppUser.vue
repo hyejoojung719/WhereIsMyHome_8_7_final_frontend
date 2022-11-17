@@ -1,16 +1,9 @@
 <template>
-  <UserSignInVue></UserSignInVue>
+  <router-view></router-view>
 </template>
 
 <script>
-import UserSignInVue from "@/components/user/UserSignIn.vue";
-
-export default {
-  name: "AppUser",
-  components: {
-    UserSignInVue,
-  },
-};
+export default {};
 </script>
 
 <style></style>
