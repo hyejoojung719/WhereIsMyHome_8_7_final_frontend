@@ -13,13 +13,6 @@ const routes = [
     path: "/map",
     name: "map",
     component: () => import("@/views/AppMap.vue"),
-    children: [
-      {
-        path: "apartList",
-        name: "apartList",
-        component: () => import("@/components/map/ApartListView.vue"),
-      },
-    ],
   },
   {
     path: "/user",
