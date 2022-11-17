@@ -5,12 +5,7 @@
       <v-col class="white" style="height: 100%" cols="8"
         ><v-img src="@/assets/img/background2.jpg" style="height: 100%"></v-img
       ></v-col>
-      <v-card
-        class="absolute rounded-xl"
-        elevation="6"
-        outlined
-        style="width: 500px; height: 650px"
-      >
+      <v-card class="absolute rounded-xl" elevation="6" outlined style="width: 500px; height: 650px">
         <v-form text-align>
           <v-col class="pa-10">
             <v-row style="height: 20px"> </v-row>
@@ -51,8 +46,7 @@
               <v-btn block class="yellow"> 카카오 로그인</v-btn>
             </v-row>
             <v-row class="text-center">
-              <v-btn class="btns" text>이메일 찾기</v-btn> |
-              <v-btn class="btns" text>비밀번호 찾기</v-btn> |
+              <v-btn class="btns" text>이메일 찾기</v-btn> | <v-btn class="btns" text>비밀번호 찾기</v-btn> |
               <v-btn class="btns" text>회원가입</v-btn>
             </v-row>
           </v-col>
@@ -66,31 +60,32 @@
 import { mapState } from "vuex";
 
 export default {
+  created() {
+    this.signinInfo.user_id = this.saveUserId.saveId;
+    this.checkbox = this.saveUserId.saveCheck;
+  },
   data() {
     return {
-      checkbox: true,
       passwordShow: false,
-      emailRules: [
-        (v) => !!v || "이메일을 입력하세요.",
-        (v) => /.+@.+/.test(v) || "올바르지 않은 이메일입니다.",
-      ],
+      emailRules: [(v) => !!v || "이메일을 입력하세요.", (v) => /.+@.+/.test(v) || "올바르지 않은 이메일입니다."],
       passwordRules: [
         (v) => !!v || "비밀번호를 입력하세요.",
-        (v) => (v && v.length <= 15) || "비밀번호는 8자 이상 15자 이하입니다.",
+        (v) => (v && v.length >= 8 && v.length <= 15) || "비밀번호는 8자 이상 15자 이하입니다.",
       ],
       signinInfo: {},
     };
   },
   computed: {
-    ...mapState("userStore", ["userInfo"]),
-    getLength() {
-      return this.signinInfo.user_password.length();
-    },
+    ...mapState("userStore", { userInfo: "userInfo", saveUserId: "saveUserId" }),
   },
   methods: {
     async signin() {
       try {
-        await this.$store.dispatch("userStore/signIn", this.signinInfo);
+        await this.$store.dispatch("userStore/signIn", {
+          signinInfo: this.signinInfo,
+          saveCheck: this.checkbox,
+          saveId: this.signinInfo.user_id,
+        });
         alert("로그인 성공");
       } catch (error) {
         alert("로그인 실패");
