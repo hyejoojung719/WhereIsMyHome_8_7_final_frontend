@@ -21,6 +21,12 @@ const userStore = {
       (v) => !(v && v.length >= 10) || "이름은 10자 이상 입력할 수 없습니다.",
       (v) => !/[~!@#$%^&*()_+|<>?:{}]/.test(v) || "이름에는 특수문자를 사용할 수 없습니다.",
     ],
+    birthRules: [
+      (v) => !!v || "생년월일을 입력하세요.",
+      (v) =>
+        /^(19|20[0-9]{2})-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/.test(v) ||
+        "YYYY-MM-DD 형식으로 날짜를 기입해주세요.",
+    ],
   }),
   getters: {},
   mutations: {
@@ -76,6 +82,15 @@ const userStore = {
     async idCheck(context, payload) {
       let { data } = await http.get("/users/check?user_id=" + payload.user_id);
       return data;
+    },
+
+    //회원가입
+    async regist(context, payload) {
+      try {
+        await http.post("/users", payload);
+      } catch (error) {
+        alert("등록 실패");
+      }
     },
   },
 };

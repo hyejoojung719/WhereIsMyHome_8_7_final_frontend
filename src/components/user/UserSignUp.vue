@@ -12,7 +12,7 @@
           >
           <v-col cols="8">
             <v-text-field
-              v-model="userInfo.email"
+              v-model="userInfo.user_id"
               placeholder="이메일 주소"
               light
               outlined
@@ -35,6 +35,7 @@
               outlined
               color="#AA8B56"
               hide-details="auto"
+              type="password"
               :rules="passwordRules"
               class="rounded-lg"
             ></v-text-field>
@@ -51,6 +52,7 @@
               outlined
               color="#AA8B56"
               hide-details="auto"
+              type="password"
               :rules="passwordRules2"
               class="rounded-lg"
             ></v-text-field>
@@ -62,6 +64,7 @@
           >
           <v-col cols="8">
             <v-text-field
+              v-model="userInfo.user_name"
               placeholder="이름을 입력해주세요."
               light
               outlined
@@ -77,19 +80,41 @@
             ><label>생년월일<strong>*</strong></label></v-col
           >
           <v-col cols="8">
-            <v-text-field
-              placeholder="생년월일을 입력해주세요."
-              light
-              outlined
-              color="#AA8B56"
-              hide-details="auto"
-              class="rounded-lg"
-              append-icon="mdi-calendar-today"
-            ></v-text-field>
+            <v-menu
+              ref="birthmenu"
+              v-model="menu"
+              :close-on-content-click="false"
+              :return-value.sync="userInfo.user_birth"
+              transition="scale-transition"
+              offset-y
+              min-width="290px"
+            >
+              <template v-slot:activator="{ on, attrs }">
+                <v-text-field
+                  v-model="userInfo.user_birth"
+                  placeholder="생년월일을 입력해주세요."
+                  light
+                  outlined
+                  color="#AA8B56"
+                  hide-details="auto"
+                  :rules="birthRules"
+                  class="rounded-lg"
+                  append-icon="mdi-calendar-today"
+                  readonly
+                  v-bind="attrs"
+                  v-on="on"
+                ></v-text-field>
+              </template>
+              <v-date-picker v-model="userInfo.user_birth" scrollable :max="today">
+                <v-spacer></v-spacer>
+                <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
+                <v-btn text color="primary" @click="date_search(userInfo.user_birth)">OK</v-btn>
+              </v-date-picker>
+            </v-menu>
           </v-col>
         </v-row>
-        <v-row>
-          <v-btn class="primary">가입하기</v-btn>
+        <v-row class="my-2 mx-10">
+          <v-btn class="primary mx-auto" block @click="regist">가입하기</v-btn>
         </v-row>
       </v-form>
     </v-col>
@@ -104,12 +129,15 @@ export default {
       userInfo: {},
       passwordRules2: [],
       emailValid: true,
+      today: new Date().toISOString().substr(0, 10),
+      birth: new Date().toISOString().substr(0, 10),
+      menu: false,
     };
   },
   computed: {
-    ...mapState("userStore", ["emailRules", "passwordRules", "nameRules"]),
+    ...mapState("userStore", ["emailRules", "passwordRules", "nameRules", "birthRules"]),
     email() {
-      return this.userInfo.email;
+      return this.userInfo.user_id;
     },
   },
   created() {
@@ -124,6 +152,17 @@ export default {
         user_id: this.email,
       });
       this.emailValid = response == 1 ? "중복된 아이디가 존재합니다." : true;
+    },
+  },
+  methods: {
+    date_search(v) {
+      this.userInfo.user_birth = v;
+      this.menu = false;
+      this.$refs.birthmenu.save(v);
+    },
+    async regist() {
+      this.$refs.form.validate();
+      await this.$store.dispatch("userStore/regist", this.userInfo);
     },
   },
 };
