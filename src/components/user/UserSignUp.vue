@@ -18,7 +18,7 @@
               outlined
               color="#AA8B56"
               hide-details="auto"
-              :rules="[emailValid]"
+              :rules="[...emailRules, emailValid]"
               class="rounded-lg"
             ></v-text-field>
           </v-col>
@@ -84,6 +84,7 @@
               color="#AA8B56"
               hide-details="auto"
               class="rounded-lg"
+              append-icon="mdi-calendar-today"
             ></v-text-field>
           </v-col>
         </v-row>
@@ -102,7 +103,6 @@ export default {
     return {
       userInfo: {},
       passwordRules2: [],
-      emailRules2: [],
       emailValid: true,
     };
   },
@@ -113,22 +113,11 @@ export default {
     },
   },
   created() {
-    this.emailRules2 = [...this.emailRules, async (v) => await this.checkDuplicate(v)];
     this.passwordRules2 = [
       ...this.passwordRules,
       (v) => (v && v === this.userInfo["user_password"]) || "패스워드가 일치하지 않습니다.",
     ];
   },
-  methods: {
-    async checkDuplicate(user_id) {
-      let response = await this.$store.dispatch("userStore/idCheck", {
-        user_id: user_id,
-      });
-      console.log("Hello : ", response);
-      return true;
-    },
-  },
-
   watch: {
     async email() {
       let response = await this.$store.dispatch("userStore/idCheck", {
