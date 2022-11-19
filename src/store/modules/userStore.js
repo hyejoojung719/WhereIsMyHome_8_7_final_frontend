@@ -8,25 +8,6 @@ const userStore = {
     userInfo: {}, //로그인한 유저 정보
     token: null,
     saveUserId: { saveCheck: false, saveId: "" },
-
-    //Rules
-    emailRules: [(v) => !!v || "이메일을 입력하세요.", (v) => /.+@.+/.test(v) || "올바르지 않은 이메일입니다."],
-    passwordRules: [
-      (v) => !!v || "비밀번호를 입력하세요.",
-      (v) => (v && v.length >= 8 && v.length <= 15) || "비밀번호는 8자 이상 15자 이하입니다.",
-      (v) => /^[a-zA-Z0-9]*$/.test(v) || "비밀번호는 영문,숫자만 입력 가능합니다.",
-    ],
-    nameRules: [
-      (v) => !!v || "이름를 입력하세요.",
-      (v) => !(v && v.length >= 10) || "이름은 10자 이상 입력할 수 없습니다.",
-      (v) => !/[~!@#$%^&*()_+|<>?:{}]/.test(v) || "이름에는 특수문자를 사용할 수 없습니다.",
-    ],
-    birthRules: [
-      (v) => !!v || "생년월일을 입력하세요.",
-      (v) =>
-        /^(19|20[0-9]{2})-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/.test(v) ||
-        "YYYY-MM-DD 형식으로 날짜를 기입해주세요.",
-    ],
   }),
   getters: {},
   mutations: {
@@ -43,30 +24,35 @@ const userStore = {
   actions: {
     //로그인
     async signIn({ commit }, payload) {
-      let { data } = await http.post("/users/signIn", payload.signinInfo);
+      try {
+        let { data } = await http.post("/users/signIn", payload.signinInfo);
 
-      let token = data.token;
-      console.log("발급받은 토큰 : ", token);
+        let token = data.token;
+        console.log("발급받은 토큰 : ", token);
 
-      // axios 요청 대신에 header에 access-token 추가
-      // http.defaults.headers.common["access-token"] = token;
+        // axios 요청 대신에 header에 access-token 추가
+        // http.defaults.headers.common["access-token"] = token;
 
-      //userStore에 token 정보 저장
-      commit("SET_TOKEN", { token });
+        //userStore에 token 정보 저장
+        commit("SET_TOKEN", { token });
 
-      let decodedToken = jwt_decode(token);
-      console.log("토큰 정보 : ", decodedToken);
+        let decodedToken = jwt_decode(token);
+        console.log("토큰 정보 : ", decodedToken);
 
-      //vuex에 userInfo 정보 저장
-      const { id } = decodedToken;
-      commit("SET_USER_INFO", { id: id });
+        //vuex에 userInfo 정보 저장
+        const { id } = decodedToken;
+        commit("SET_USER_INFO", { id: id });
 
-      //vuex에 saveId 정보 저장
-      const { saveCheck, saveId } = payload;
-      if (saveCheck) {
-        commit("SET_SAVE_USER_ID", { saveCheck: true, saveId: saveId });
-      } else {
-        commit("SET_SAVE_USER_ID", { saveCheck: false, saveId: "" });
+        //vuex에 saveId 정보 저장
+        const { saveCheck, saveId } = payload;
+        if (saveCheck) {
+          commit("SET_SAVE_USER_ID", { saveCheck: true, saveId: saveId });
+        } else {
+          commit("SET_SAVE_USER_ID", { saveCheck: false, saveId: "" });
+        }
+        return true;
+      } catch (error) {
+        return false;
       }
     },
 
