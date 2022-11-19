@@ -135,7 +135,7 @@ export default {
     };
   },
   computed: {
-    ...mapState("userStore", ["emailRules", "passwordRules", "nameRules", "birthRules"]),
+    ...mapState("ruleStore", ["emailRules", "passwordRules", "nameRules", "birthRules"]),
     email() {
       return this.userInfo.user_id;
     },

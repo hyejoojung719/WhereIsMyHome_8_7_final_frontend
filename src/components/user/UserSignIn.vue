@@ -6,7 +6,7 @@
         ><v-img src="@/assets/img/background2.jpg" style="height: 100%"></v-img
       ></v-col>
       <v-card class="absolute rounded-xl" elevation="6" outlined style="width: 500px; height: 650px">
-        <v-form text-align>
+        <v-form ref="form" text-align>
           <v-col class="pa-10">
             <v-row style="height: 20px"> </v-row>
             <v-row><v-img class="logo" src="@/assets/img/logo1.png"></v-img></v-row>
@@ -29,9 +29,9 @@
                 outlined
                 color="#AA8B56"
                 clearable
-                hide-details="auto"
-                :append-icon="passwordShow ? 'mdi-eye' : 'mdi-eye-off'"
+                hide-details
                 :rules="passwordRules"
+                :append-icon="passwordShow ? 'mdi-eye' : 'mdi-eye-off'"
                 :type="passwordShow ? 'text' : 'password'"
                 @click:append="switchType"
               ></v-text-field>
@@ -71,24 +71,25 @@ export default {
     };
   },
   computed: {
-    ...mapState("userStore", {
-      userInfo: "userInfo",
-      saveUserId: "saveUserId",
-      emailRules: "emailRules",
-      passwordRules: "passwordRules",
-    }),
+    ...mapState("userStore", ["saveUserId"]),
+    ...mapState("ruleStore", ["emailRules", "passwordRules"]),
   },
   methods: {
     async signin() {
-      try {
-        await this.$store.dispatch("userStore/signIn", {
-          signinInfo: this.signinInfo,
-          saveCheck: this.checkbox,
-          saveId: this.signinInfo.user_id,
-        });
-        alert("로그인 성공");
-      } catch (error) {
+      if (!this.$refs.form.validate()) {
         alert("로그인 실패");
+        return;
+      }
+      let response = await this.$store.dispatch("userStore/signIn", {
+        signinInfo: this.signinInfo,
+        saveCheck: this.checkbox,
+        saveId: this.signinInfo.user_id,
+      });
+      if (response) {
+        this.$router.replace({ name: "main" });
+      } else {
+        alert("로그인 실패");
+        this.$refs.form.reset();
       }
     },
     switchType() {
