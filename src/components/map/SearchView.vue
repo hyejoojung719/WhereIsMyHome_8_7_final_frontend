@@ -4,13 +4,13 @@
       <v-container fluid>
         <v-row align="center">
           <v-col class="d-flex" sm="3">
-            <v-select v-model="sidoCode" :items="sidos" @change="gugunList" solo></v-select>
+            <v-select v-model="sido" :items="sidos" @change="gugunList" solo return-object></v-select>
           </v-col>
           <v-col class="d-flex" sm="2">
-            <v-select v-model="gugunCode" :items="guguns" @change="dongList" solo></v-select>
+            <v-select v-model="gugun" :items="guguns" @change="dongList" solo return-object></v-select>
           </v-col>
           <v-col class="d-flex" sm="2">
-            <v-select v-model="dongCode" :items="dongs" solo></v-select>
+            <v-select v-model="dong" :items="dongs" solo return-object></v-select>
           </v-col>
           <v-btn color="secondary" @click="searchHouse">검색</v-btn>
         </v-row>
@@ -18,7 +18,7 @@
     </v-app>
     <div id="app" class="d-flex justify-content-start">
       <v-app id="inspire">
-        <v-card v-if="houses[0] && houses[0].length != 0" class="mx-auto" min-width="300" min-height="700">
+        <v-card class="apartinfo mx-auto" v-if="houses[0] && houses[0].length != 0" min-width="300" min-height="700">
           <v-list>
             <v-list-item-group color="secondary">
               <!-- @click="ddd(house)" -->
@@ -33,10 +33,16 @@
             </v-list-item-group>
           </v-list>
         </v-card>
-        <v-card v-else class="mx-auto" min-width="300" min-height="700"> </v-card>
+        <v-card v-else class="apartinfo mx-auto" min-width="300" min-height="700"> </v-card>
       </v-app>
       <v-app id="detail_card">
-        <v-card class="mx-auto" min-width="300" min-height="700" id="detail_card_content" style="display: none">
+        <v-card
+          class="apartinfo mx-auto"
+          min-width="300"
+          min-height="700"
+          id="detail_card_content"
+          style="display: none"
+        >
           <template slot="progress">
             <v-progress-linear color="deep-purple" height="10" indeterminate></v-progress-linear>
           </template>
@@ -57,7 +63,20 @@
           </v-card-text>
         </v-card>
       </v-app>
-      <div id="map"></div>
+      <div id="map">
+        <div id="infra">
+          <v-card elevation="5" width="50">
+            <v-list dense rounded>
+              <v-list-item link class="px-0">
+                <v-img src="@/assets/img/school_icon.png" width="10px" @click="getSchoolInfo"></v-img>
+              </v-list-item>
+              <v-list-item link class="px-0">
+                <v-img src="@/assets/img/bus_icon.png" width="10px"></v-img>
+              </v-list-item>
+            </v-list>
+          </v-card>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -79,89 +98,157 @@ export default {
   },
   data() {
     return {
-      sidoCode: null,
-      gugunCode: null,
-      dongCode: null,
+      sido: null,
+      gugun: null,
+      dong: null,
       markers: [],
+      curlat: 36.366701,
+      curlng: 127.344307,
+      markerParam: {
+        arr: [], // 마커 표시할 위치 담은 배열
+        txt: "", // 표시할 이미지 다르게 하기위한 마커 이름 house, housepick, school, current, bus, hospital...
+      },
     };
   },
   computed: {
-    ...mapState("mapStore", ["sidos", "guguns", "dongs", "houses"]),
+    ...mapState("mapStore", ["sidos", "guguns", "dongs", "houses", "schools"]),
   },
-  created() {
+  async created() {
     this.CLEAR_SIDO_LIST();
     this.CLEAR_GUGUN_LIST();
     this.CLEAR_DONG_LIST();
     this.CLEAR_HOUSE_LIST();
+    this.CLEAR_SCHOOL_LIST();
     this.getSido(); // 시도 정보 가져오기
+
+    let curloc = {
+      curlat: this.curlat,
+      curlng: this.curlng,
+    };
+
+    await this.getCurHouseList(curloc);
+    console.log("현재 주변 아파트 : ", this.houses);
   },
   methods: {
-    ...mapActions("mapStore", ["getSido", "getGugun", "getDong", "getHouseList"]),
-    ...mapMutations("mapStore", ["CLEAR_SIDO_LIST", "CLEAR_GUGUN_LIST", "CLEAR_DONG_LIST", "CLEAR_HOUSE_LIST"]),
+    ...mapActions("mapStore", ["getSido", "getGugun", "getDong", "getCurHouseList", "getHouseList", "getSchoolList"]),
+    ...mapMutations("mapStore", [
+      "CLEAR_SIDO_LIST",
+      "CLEAR_GUGUN_LIST",
+      "CLEAR_DONG_LIST",
+      "CLEAR_HOUSE_LIST",
+      "CLEAR_SCHOOL_LIST",
+    ]),
 
     // 구군 정보 가져오기
     gugunList() {
       this.CLEAR_GUGUN_LIST();
-      this.gugunCode = null;
-      if (this.sidoCode) {
-        this.getGugun(this.sidoCode.substr(0, 2));
+      this.gugun = null;
+      if (this.sido.value) {
+        this.getGugun(this.sido.value.substr(0, 2));
       }
     },
 
     // 동 정보 가져오기
     dongList() {
       this.CLEAR_DONG_LIST();
-      this.dongCode = null;
-      if (this.gugunCode) {
-        this.getDong(this.gugunCode.substr(0, 5));
+      this.dong = null;
+      if (this.gugun.value) {
+        this.getDong(this.gugun.value.substr(0, 5));
       }
     },
 
     // 아파트 리스트 가져오기
     async searchHouse() {
+      this.CLEAR_HOUSE_LIST();
+
       let searchInfo = {
-        dongCode: this.dongCode,
+        dongCode: this.dong.value,
       };
 
-      if (this.dongCode) {
+      if (this.dong.value) {
         await this.getHouseList(searchInfo);
       }
 
       if (!(this.houses[0] && this.houses[0].length != 0)) {
         alert("매물 정보가 없습니다. ");
         this.initMap();
+        // 현재 위치 아파트 가져오기
       } else {
-        this.displayMarekrs();
+        this.markerDel();
+        this.markerParam.arr = this.houses[0];
+        this.markerParam.txt = "house";
+        this.displayMarkers();
+      }
+    },
+
+    // gps로 사용자의 현재 위치 받아오는 함수, Promise를 리턴
+    getMyGps() {
+      return new Promise((resolve, rejected) => {
+        navigator.geolocation.getCurrentPosition(resolve, rejected);
+      });
+    },
+
+    // 현재 위치로 curlat, curlng 설정
+    async currentLoc() {
+      try {
+        let position = await this.getMyGps();
+        this.curlat = position.coords.latitude;
+        this.curlng = position.coords.longitude;
+      } catch (error) {
+        alert("현재 위치를 표시할 수 없습니다. ");
       }
     },
 
     // 지도 표시
-    initMap() {
+    async initMap() {
+      // 현재 위치 기준으로 표시
+      this.currentLoc();
+
       const container = document.getElementById("map");
       const options = {
-        center: new kakao.maps.LatLng(33.450701, 126.570667),
+        center: new kakao.maps.LatLng(this.curlat, this.curlng),
         level: 5,
       };
 
       this.map = new kakao.maps.Map(container, options);
+
+      // 현재 위치에 마커 표시
+      let current = {
+        lat: this.curlat,
+        lng: this.curlng,
+      };
+      this.markerParam.arr = [current];
+      this.markerParam.txt = "current";
+      this.displayMarkers();
     },
 
     //지도에 marker 표시하기
-    displayMarekrs() {
+    displayMarkers() {
       // markers 초기화
       this.markers = [];
 
-      for (let i = 0; i < this.houses[0].length; i++) {
-        let h_lng = this.houses[0][i].lng;
-        let h_lat = this.houses[0][i].lat;
-        this.markers.push([parseFloat(h_lat), parseFloat(h_lng)]);
+      // 파라미터 값 가져오기
+      let arr = this.markerParam.arr;
+      let txt = this.markerParam.txt;
+
+      for (let i = 0; i < arr.length; i++) {
+        let lng = arr[i].lng;
+        let lat = arr[i].lat;
+        this.markers.push([parseFloat(lat), parseFloat(lng)]);
       }
 
       let positions = this.markers.map((position) => new kakao.maps.LatLng(...position));
 
-      var imageSrc = require("@/assets/img/house_marker.png"),
-        imageSize = new kakao.maps.Size(45, 45),
-        imageOption = { offset: new kakao.maps.Point(27, 69) };
+      var imageSrc;
+      if (txt == "house") {
+        imageSrc = require("@/assets/img/house_marker.png");
+      } else if (txt == "school") {
+        imageSrc = require("@/assets/img/school_marker.png");
+      } else if (txt == "current") {
+        imageSrc = require("@/assets/img/current_marker.png");
+      }
+      var imageSize = new kakao.maps.Size(40, 40);
+      var imageOption = { offset: new kakao.maps.Point(13, 37) };
 
       var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
 
@@ -182,34 +269,18 @@ export default {
     },
 
     // 특정 아파트 선택시 해당 위치로 마커 보여주기
-    markerPeek(house) {
-      // markers 초기화 및 해당 위치로 마커 이동
-      this.markers = [];
+    markerPick(house) {
+      this.markerDel();
+      this.markerParam.arr = [house];
+      this.markerParam.txt = "house";
+      this.displayMarkers();
+    },
 
-      let lat = house.lat;
-      let lng = house.lng;
-
-      this.markers.push([parseFloat(lat), parseFloat(lng)]);
-
-      const positions = this.markers.map((position) => new kakao.maps.LatLng(...position));
-      var imageSrc = require("@/assets/img/house_marker.png"),
-        imageSize = new kakao.maps.Size(45, 45),
-        imageOption = { offset: new kakao.maps.Point(27, 69) };
-      var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
-      if (positions.length > 0) {
-        this.markers = positions.map(
-          (position) =>
-            new kakao.maps.Marker({
-              map: this.map,
-              position,
-              image: markerImage,
-            })
-        );
-
-        const bounds = positions.reduce((bounds, latlng) => bounds.extend(latlng), new kakao.maps.LatLngBounds());
-
-        this.map.setBounds(bounds);
-      }
+    // 마커 초기화(기존 마커들 지우기)
+    markerDel() {
+      this.markerParam.arr = [];
+      this.markerParam.txt = "house";
+      this.displayMarkers();
     },
 
     // 상세정보 카드 만들기
@@ -226,8 +297,8 @@ export default {
 
       // 해당 위치로 마커 이동
       this.map.panTo(new kakao.maps.LatLng(lat, lng));
-      // 다른 마커 삭제하고 해당 마커만 보여주기
-      this.markerPeek(house);
+      // 해당 마커 보여주기
+      this.markerPick(house);
 
       // 로드뷰 셋팅=================================================
       var roadviewContainer = document.getElementById("roadview"); //로드뷰를 표시할 div
@@ -240,6 +311,23 @@ export default {
       roadviewClient.getNearestPanoId(position, 50, function (panoId) {
         roadview.setPanoId(panoId, position); //panoId와 중심좌표를 통해 로드뷰 실행
       });
+    },
+
+    // 학교 정보 가져오고 마커 표시하기
+    async getSchoolInfo() {
+      let sidoName = this.sido.text;
+      let gugunName = this.gugun.text;
+
+      let areaInfo = {
+        sido: sidoName,
+        gugun: gugunName,
+      };
+      await this.getSchoolList(areaInfo);
+
+      this.markerDel();
+      this.markerParam.arr = this.schools;
+      this.markerParam.txt = "school";
+      this.displayMarkers();
     },
   },
 };
@@ -255,9 +343,18 @@ a:hover {
 #map {
   width: 100%;
   height: 700px;
+  position: relative;
+  z-index: 1;
 }
-.v-card {
+.apartinfo {
   height: 700px;
   overflow-y: auto;
+}
+
+#infra {
+  position: absolute;
+  right: 20px;
+  top: 250px;
+  z-index: 2;
 }
 </style>

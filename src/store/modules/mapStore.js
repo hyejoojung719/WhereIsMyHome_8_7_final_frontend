@@ -8,6 +8,7 @@ const mapStore = {
     guguns: [{ value: null, text: "구/군" }],
     dongs: [{ value: null, text: "동" }],
     houses: [],
+    schools: [],
   }),
   getters: {},
   mutations: {
@@ -29,6 +30,10 @@ const mapStore = {
     },
     SET_HOUSE_LIST(state, houses) {
       state.houses = houses;
+      console.log("SET_HOUSE_LIST houses : ", state.houses);
+    },
+    SET_SCHOOL_LIST(state, schools) {
+      state.schools = schools;
     },
 
     // 리스트 초기화
@@ -44,8 +49,28 @@ const mapStore = {
     CLEAR_HOUSE_LIST(state) {
       state.houses = [];
     },
+    CLEAR_SCHOOL_LIST(state) {
+      state.schools = [];
+    },
   },
   actions: {
+    // 현재 위치 아파트 리스트 가져오기
+    async getCurHouseList({ commit }, curLocation) {
+      const params = {
+        curlat: curLocation.curlat,
+        curlng: curLocation.curlng,
+      };
+
+      console.log("params : ", params);
+      try {
+        let { data } = await http.get(`/apart/curApart`, { params });
+        console.log("data : ", data);
+        commit("SET_HOUSE_LIST", data);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
     // sido 정보 가져오기
     async getSido({ commit }) {
       try {
@@ -87,6 +112,20 @@ const mapStore = {
       try {
         let { data } = await http.get(`/apart/apartInfo`, { params });
         commit("SET_HOUSE_LIST", data);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    // 학교 정보 가져오기
+    async getSchoolList({ commit }, areaInfo) {
+      const params = {
+        sidoName: areaInfo.sido,
+        gugunName: areaInfo.gugun,
+      };
+      try {
+        let { data } = await http.get(`/infra/school`, { params });
+        commit("SET_SCHOOL_LIST", data);
       } catch (error) {
         console.log(error);
       }
