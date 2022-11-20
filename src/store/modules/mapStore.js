@@ -9,6 +9,7 @@ const mapStore = {
     dongs: [{ value: null, text: "동" }],
     houses: [],
     schools: [],
+    buses: [],
   }),
   getters: {},
   mutations: {
@@ -30,10 +31,12 @@ const mapStore = {
     },
     SET_HOUSE_LIST(state, houses) {
       state.houses = houses;
-      console.log("SET_HOUSE_LIST houses : ", state.houses);
     },
     SET_SCHOOL_LIST(state, schools) {
       state.schools = schools;
+    },
+    SET_BUS_LIST(state, buses) {
+      state.buses = buses;
     },
 
     // 리스트 초기화
@@ -52,6 +55,9 @@ const mapStore = {
     CLEAR_SCHOOL_LIST(state) {
       state.schools = [];
     },
+    CLEAR_BUS_LIST(state) {
+      state.buses = [];
+    },
   },
   actions: {
     // 현재 위치 아파트 리스트 가져오기
@@ -61,10 +67,8 @@ const mapStore = {
         curlng: curLocation.curlng,
       };
 
-      console.log("params : ", params);
       try {
         let { data } = await http.get(`/apart/curApart`, { params });
-        console.log("data : ", data);
         commit("SET_HOUSE_LIST", data);
       } catch (error) {
         console.log(error);
@@ -111,21 +115,50 @@ const mapStore = {
 
       try {
         let { data } = await http.get(`/apart/apartInfo`, { params });
-        commit("SET_HOUSE_LIST", data);
+        // console.log("검색 버튼 누르고 data : ", data);
+        commit("SET_HOUSE_LIST", data[0]);
       } catch (error) {
         console.log(error);
       }
     },
 
     // 학교 정보 가져오기
-    async getSchoolList({ commit }, areaInfo) {
+    async getCurSchool({ commit }, curLoc) {
       const params = {
-        sidoName: areaInfo.sido,
-        gugunName: areaInfo.gugun,
+        curlat: curLoc.lat,
+        curlng: curLoc.lng,
       };
       try {
         let { data } = await http.get(`/infra/school`, { params });
         commit("SET_SCHOOL_LIST", data);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    // 버스정류장 정보 가져오기
+    async getCurBus({ commit }, curLoc) {
+      const params = {
+        curlat: curLoc.lat,
+        curlng: curLoc.lng,
+      };
+      try {
+        let { data } = await http.get(`/infra/bus`, { params });
+        commit("SET_BUS_LIST", data);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    // 아파트 검색하기
+    async getByKeyword({ commit }, keyword) {
+      const params = {
+        keyword: keyword,
+      };
+      try {
+        let { data } = await http.get(`/apart/search`, { params });
+        // console.log("돋보기 누르고 data : ", data);
+        commit("SET_HOUSE_LIST", data);
       } catch (error) {
         console.log(error);
       }
