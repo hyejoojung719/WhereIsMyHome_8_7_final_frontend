@@ -53,7 +53,7 @@
       <v-app id="detail_card">
         <v-card
           class="apartinfo mx-auto"
-          min-width="300"
+          min-width="350"
           min-height="700"
           id="detail_card_content"
           style="display: none"
@@ -313,9 +313,7 @@ export default {
     displayMarkers(flag) {
       // markers 초기화
       if (flag == true) {
-        console.log("this.markers :", this.markers);
         this.markerDel(this.markers);
-        console.log("this.tempMarkers :", this.tempMarkers);
         this.markerDel(this.tempMarkers);
       } else {
         // 임시 markers에 markers 담아야함
@@ -332,12 +330,8 @@ export default {
       for (let i = 0; i < arr.length; i++) {
         let lng = arr[i].lng;
         let lat = arr[i].lat;
-        this.markers.push([parseFloat(lat), parseFloat(lng), arr[i].apartmentName]);
+        this.markers.push([parseFloat(lat), parseFloat(lng)]);
       }
-
-      // this.markers안에 들어있는 좌표 정보를 가지고 marker를 for문을 돌려가면 만들어준다.
-      // 이때 marker option들을 추가해주고
-      // 클릭헀을 때 인포윈도우를 뜰 수 있도록 속성을 추가해준다.
 
       // 마커 이미지 속성 셋팅
       var imageSrc;
@@ -357,42 +351,6 @@ export default {
 
       var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
 
-      // let positions = [];
-      // for (let i = 0; i < this.markers.length; i++) {
-      //   let position = {
-      //     latlng: new kakao.maps.LatLng(this.markers[i][0], this.markers[i][1]),
-      //     title: this.markers[i][2],
-      //   };
-      //   positions.push(position);
-      // }
-
-      // for (let i = 0; i < positions.length; i++) {
-      //   let marker = new kakao.maps.Marker({
-      //     map: this.map,
-      //     position: positions[i].latlng, // 마커를 표시할 위치
-      //     title: positions[i].title, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
-      //     image: markerImage, // 마커 이미지
-      //     clickable: true,
-      //   });
-
-      //   marker.setMap(this.map);
-      //   // var iwContent = '<div style="padding:5px;">Hello World!</div>', // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
-      //   //   iwRemoveable = true; // removeable 속성을 ture 로 설정하면 인포윈도우를 닫을 수 있는 x버튼이 표시됩니다
-
-      //   // // 인포윈도우를 생성합니다
-      //   // var infowindow = new kakao.maps.InfoWindow({
-      //   //   content: iwContent,
-      //   //   removable: iwRemoveable,
-      //   // });
-
-      //   // // 마커에 클릭이벤트를 등록합니다
-      //   // kakao.maps.event.addListener(marker2, "click", function () {
-      //   //   // 마커 위에 인포윈도우를 표시합니다
-      //   //   infowindow.open(this.map, marker2);
-      //   // });
-      // }
-
-      // let positions = this.markers.map((position) => new kakao.maps.LatLng(...position));
       let positions = this.markers.map((position) => new kakao.maps.LatLng(...position));
 
       if (positions.length > 0) {
@@ -522,22 +480,6 @@ export default {
         this.displayMarkers(false);
       }
     },
-
-    // 인포윈도우 구현하기
-    // displayInfoWindow() {
-    //   var iwContent = '<div style="padding:5px;">Hello World!</div>', // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
-    //     iwPosition = new kakao.maps.LatLng(33.450701, 126.570667), //인포윈도우 표시 위치입니다
-    //     iwRemoveable = true; // removeable 속성을 ture 로 설정하면 인포윈도우를 닫을 수 있는 x버튼이 표시됩니다
-
-    //   var infowindow = new kakao.maps.InfoWindow({
-    //     map: this.map, // 인포윈도우가 표시될 지도
-    //     position: iwPosition,
-    //     content: iwContent,
-    //     removable: iwRemoveable,
-    //   });
-
-    //   this.map.setCenter(iwPosition);
-    // },
 
     // 아파트 이름으로 검색하기
     async searchApart() {
