@@ -13,6 +13,10 @@ export default new Vuetify({
       },
       icons: {
         iconfont: "fa",
+        values: {
+          heartfull: "fa-solid fa-heart",
+          heartround: "fa-regular fa-heart",
+        },
       },
     },
   },

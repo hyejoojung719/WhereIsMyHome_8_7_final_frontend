@@ -71,7 +71,8 @@
           </v-card-title>
 
           <div id="roadview" style="width: 100%; height: 300px"></div>
-          <v-card-text>
+          <v-card-text class="text-right">
+            <div><v-icon>fa-close</v-icon></div>
             <div class="my-4 text-subtitle-1">주소</div>
           </v-card-text>
 
