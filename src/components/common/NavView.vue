@@ -11,11 +11,11 @@
     <router-link :to="{ name: 'home' }">
       <span class="white--text px-5">부동산 뉴스</span>
     </router-link>
-    <router-link :to="{ name: 'userSignIn' }" v-if="!!!userInfo.id">
+    <router-link :to="{ name: 'userSignIn' }" v-if="!!!userInfo.user_id">
       <span class="white--text px-5">로그인</span>
     </router-link>
     <template v-else>
-      <router-link :to="{ name: 'mypage', params: { user_id: userInfo.id } }">
+      <router-link :to="{ name: 'mypage', params: { user_id: userInfo.user_id } }">
         <span class="white--text px-5">마이페이지</span>
       </router-link>
       <v-btn class="white--text px-5" href="#" @click.prevent="signout" style="font-size: 16px" text>로그아웃</v-btn>

@@ -40,8 +40,9 @@ const userStore = {
         console.log("토큰 정보 : ", decodedToken);
 
         //vuex에 userInfo 정보 저장
-        const { id } = decodedToken;
-        commit("SET_USER_INFO", { id: id });
+        const { userId } = decodedToken;
+        console.log("userId : {}", userId);
+        commit("SET_USER_INFO", { user_id: userId });
 
         //vuex에 saveId 정보 저장
         const { saveCheck, saveId } = payload;
@@ -74,8 +75,9 @@ const userStore = {
     async regist(context, payload) {
       try {
         await http.post("/users", payload);
+        return true;
       } catch (error) {
-        alert("등록 실패");
+        return false;
       }
     },
   },

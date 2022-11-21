@@ -162,7 +162,12 @@ export default {
     },
     async regist() {
       this.$refs.form.validate();
-      await this.$store.dispatch("userStore/regist", this.userInfo);
+      let response = await this.$store.dispatch("userStore/regist", this.userInfo);
+      if (response) {
+        this.$router.replace({ name: "userSignIn" });
+      } else {
+        alert("등록 실패");
+      }
     },
   },
 };
