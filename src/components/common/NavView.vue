@@ -11,6 +11,9 @@
     <router-link :to="{ name: 'home' }">
       <span class="white--text px-5">부동산 뉴스</span>
     </router-link>
+    <router-link :to="{ name: 'board' }">
+      <span class="white--text px-5">공지사항</span>
+    </router-link>
     <router-link :to="{ name: 'userSignIn' }" v-if="!!!userInfo.id">
       <span class="white--text px-5">로그인</span>
     </router-link>

@@ -31,6 +31,12 @@ const routes = [
       },
     ],
   },
+  {
+    path: "/board",
+    name: "board",
+    component: () => import("@/views/AppBoard"),
+    // redirect: "/board/list",
+  },
 ];
 
 const router = new VueRouter({
