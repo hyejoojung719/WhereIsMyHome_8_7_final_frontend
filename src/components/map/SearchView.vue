@@ -71,9 +71,18 @@
           </v-card-title>
 
           <div id="roadview" style="width: 100%; height: 300px"></div>
-          <v-card-text class="text-right">
-            <div><v-icon>fa-close</v-icon></div>
-            <div class="my-4 text-subtitle-1">주소</div>
+          <v-card-text>
+            <div class="text-right" style="display: block" id="emptyHeart">
+              <v-btn icon id="myHouseBtn" @click="addMyHouse"
+                ><font-awesome-icon icon="fa-regular fa-heart" class="fa-xl" style="color: red" />
+              </v-btn>
+            </div>
+            <div class="text-right" style="display: none" id="fullHeart">
+              <v-btn icon id="myHouseBtn" @click="addMyHouse"
+                ><font-awesome-icon icon="fa-solid fa-heart" class="fa-xl" style="color: red" />
+              </v-btn>
+            </div>
+            <div class="m-0 text-subtitle-1">주소</div>
           </v-card-text>
 
           <v-divider class="mx-4"></v-divider>
@@ -127,17 +136,20 @@ import { mapState, mapActions, mapMutations } from "vuex";
 
 export default {
   mounted() {
-    // if (window.kakao && window.kakao.maps) {
-    //   this.initMap();
-    // } else {
-    const script = document.createElement("script");
-    /* global kakao */
-    script.onload = () => kakao.maps.load(this.initMap);
-    script.src =
-      "//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=9f2f61f8fb619932f1da3bd45427cbcd&libraries=services";
-    document.head.appendChild(script);
-    // }
+    if (window.kakao && window.kakao.maps) {
+      this.initMap();
+    } else {
+      const script = document.createElement("script");
+      /* global kakao */
+      console.log("mounted");
+      script.onload = () => kakao.maps.load(this.initMap);
+      script.src =
+        "//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=9f2f61f8fb619932f1da3bd45427cbcd&libraries=services";
+      document.head.appendChild(script);
+    }
   },
+  //36.366701,
+  //127.344307,
   data() {
     return {
       sido: null,
@@ -145,14 +157,14 @@ export default {
       dong: null,
       markers: [],
       tempMarkers: [],
-      curlat: 36.366701,
-      curlng: 127.344307,
+      curlat: 36.355600828062805,
+      curlng: 127.29918461338437,
       markerParam: {
         arr: [], // 마커 표시할 위치 담은 배열
         txt: "", // 표시할 이미지 다르게 하기위한 마커 이름 house, housepick, school, current, bus, hospital...
       },
       keyword: "",
-
+      house: null, // 리스트에서 선택한 house
       // 카테고리 검색 관련 변수
       inframarkers: [],
       placeOverlay: null,
@@ -162,7 +174,7 @@ export default {
     };
   },
   computed: {
-    ...mapState("mapStore", ["sidos", "guguns", "dongs", "houses", "schools", "buses"]),
+    ...mapState("mapStore", ["sidos", "guguns", "dongs", "houses", "schools", "buses", "myHouses"]),
   },
   async created() {
     this.CLEAR_SIDO_LIST();
@@ -172,6 +184,10 @@ export default {
     this.CLEAR_SCHOOL_LIST();
     this.CLEAR_BUS_LIST();
     this.getSido(); // 시도 정보 가져오기
+
+    // 관심 아파트 목록 가져오기
+    this.getMyApart("ssafy@ssafy.com");
+    console.log("내가 찜한 집 : ", this.myHouses);
   },
   methods: {
     ...mapActions("mapStore", [
@@ -183,6 +199,8 @@ export default {
       "getCurSchool",
       "getCurBus",
       "getByKeyword",
+      "insertMyApart",
+      "getMyApart",
     ]),
     ...mapMutations("mapStore", [
       "CLEAR_SIDO_LIST",
@@ -191,6 +209,7 @@ export default {
       "CLEAR_HOUSE_LIST",
       "CLEAR_SCHOOL_LIST",
       "CLEAR_BUS_LIST",
+      "CLEAR_MYHOUSE_LIST",
     ]),
 
     // 구군 정보 가져오기
@@ -258,8 +277,7 @@ export default {
         let position = await this.getMyGps();
         this.curlat = position.coords.latitude;
         this.curlng = position.coords.longitude;
-        // console.log("위도 : ", this.curlat);
-        // console.log("경도 : ", this.curlng);
+
         //위도 :  35.907757
         //경도 :  127.766922
       } catch (error) {
@@ -269,8 +287,9 @@ export default {
 
     // 지도 표시
     async initMap() {
+      console.log("initMap() 호출");
       // 현재 위치 기준으로 표시
-      this.currentLoc();
+      // await this.currentLoc();
 
       const container = document.getElementById("map");
       const options = {
@@ -357,6 +376,8 @@ export default {
         let lat = arr[i].lat;
         this.markers.push([parseFloat(lat), parseFloat(lng), arr[i].apartmentName, arr[i]]);
       }
+
+      if (txt == "current") this.markers[0][2] = "나예요";
 
       // 마커 이미지 속성 셋팅
       var imageSrc;
@@ -445,17 +466,26 @@ export default {
 
     // 상세정보 카드 만들기
     makeDetailCard(house) {
+      // display 상태 설정======================================
       let item = document.getElementById("detail_card_content");
       item.style.display = "block";
 
+      // house 정보 가져오기 ===================================
       let lat = house.lat;
       let lng = house.lng;
       let apartmentName = house.apartmentName;
+      // let aptCode = house.aptCode;
 
-      // detail card 정보 셋팅
+      // house값 셋팅 => 하트 누르면 해당 house 값이 매개변수로 넘어감============
+      this.house = house;
+
+      // detail card 정보 셋팅=============================================
       document.getElementById("apartmentName").innerHTML = apartmentName;
 
-      // 해당 위치로 마커 이동
+      // heart 상태================================================================
+      this.heartStatus();
+
+      // 해당 위치로 마커 이동==================================================
       this.map.panTo(new kakao.maps.LatLng(lat, lng));
       // 해당 마커 보여주기
       this.markerPick(house);
@@ -561,6 +591,45 @@ export default {
         alert("검색어를 입력해주세요.");
       }
     },
+
+    //==================================== 아파트 찜하기 기능
+    // 아파트 찜 버튼 눌렀을 때
+    async addMyHouse() {
+      await this.insertMyApart(this.house);
+      // 관심 아파트 목록 가져오기 => 버튼 누를 때마다 갱신 해준다.
+      this.getMyApart("ssafy@ssafy.com");
+
+      if (document.getElementById("emptyHeart").style.display == "none") {
+        document.getElementById("emptyHeart").style.display = "block";
+        document.getElementById("fullHeart").style.display = "none";
+      } else {
+        document.getElementById("emptyHeart").style.display = "none";
+        document.getElementById("fullHeart").style.display = "block";
+      }
+    },
+
+    // 하트 상태 체크
+    heartStatus() {
+      let flag = false;
+
+      for (let i = 0; i < this.myHouses.length; i++) {
+        if (this.myHouses[i].aptCode == this.house.aptCode) {
+          flag = true;
+        }
+      }
+
+      if (flag) {
+        // 찜목록에 있다면 => 하트를 꽉 찬 하트로
+        document.getElementById("emptyHeart").style.display = "none";
+        document.getElementById("fullHeart").style.display = "block";
+      } else {
+        // 없다면 빈 하트로
+        document.getElementById("emptyHeart").style.display = "block";
+        document.getElementById("fullHeart").style.display = "none";
+      }
+    },
+
+    //===========================================
 
     //======================== 카테고리별 장소 검색(은행, 마트, 약국, 주유소, 카페, 편의점) start
     // 엘리먼트에 이벤트 핸들러를 등록하는 함수입니다
