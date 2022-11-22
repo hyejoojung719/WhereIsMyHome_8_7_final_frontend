@@ -1,5 +1,5 @@
 <template>
-  <div>공지사항</div>
+  <router-view></router-view>
 </template>
 
 <script>

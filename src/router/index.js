@@ -48,7 +48,19 @@ const routes = [
     path: "/board",
     name: "board",
     component: () => import("@/views/AppBoard"),
-    // redirect: "/board/list",
+    redirect: "/board/list",
+    children: [
+      {
+        path: "list",
+        name: "boardlist",
+        component: () => import("@/components/board/BoardList"),
+      },
+      {
+        path: "list",
+        name: "boardwrite",
+        component: () => import("@/components/board/BoardWrite"),
+      },
+    ],
   },
 ];
 

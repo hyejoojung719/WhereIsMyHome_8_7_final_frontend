@@ -4,6 +4,7 @@ import Vuex from "vuex";
 import mapStore from "@/store/modules/mapStore.js";
 import userStore from "@/store/modules/userStore.js";
 import ruleStore from "@/store/modules/ruleStore.js";
+import boardStore from "@/store/modules/boardStore.js";
 
 import createPersistedState from "vuex-persistedstate";
 
@@ -13,9 +14,9 @@ export default new Vuex.Store({
   plugins: [
     createPersistedState({
       storage: window.sessionStorage, // store를 session storage 에 유지
-      paths: ["mapStore", "userStore"],
+      paths: ["mapStore", "userStore", "boardStore"],
     }),
   ],
 
-  modules: { mapStore, userStore, ruleStore },
+  modules: { mapStore, userStore, ruleStore, boardStore },
 });
