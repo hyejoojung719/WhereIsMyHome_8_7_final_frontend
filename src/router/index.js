@@ -33,14 +33,31 @@ const routes = [
     component: () => import("@/views/AppUser.vue"),
     children: [
       {
-        path: "/signin",
+        path: "signin",
         name: "userSignIn",
         component: () => import("@/components/user/UserSignIn.vue"),
       },
       {
-        path: "/signup",
+        path: "signup",
         name: "userSignUp",
         component: () => import("@/components/user/UserSignUp.vue"),
+      },
+      {
+        path: "mypage",
+        name: "mypage",
+        component: () => import("@/views/AppUserMyPage.vue"),
+        children: [
+          {
+            path: "",
+            name: "userMyPage",
+            component: () => import("@/components/user/UserMyPage.vue"),
+          },
+          {
+            path: "update",
+            name: "userUpdateMyPage",
+            componetn: () => import("@/components/user/UserUpdateMyPage.vue"),
+          },
+        ],
       },
     ],
   },
