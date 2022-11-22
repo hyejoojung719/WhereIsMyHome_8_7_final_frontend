@@ -10,6 +10,7 @@ const mapStore = {
     houses: [],
     schools: [],
     buses: [],
+    myHouses: [],
   }),
   getters: {},
   mutations: {
@@ -38,6 +39,9 @@ const mapStore = {
     SET_BUS_LIST(state, buses) {
       state.buses = buses;
     },
+    SET_MYHOUSE_LIST(state, myHouses) {
+      state.myHouses = myHouses;
+    },
 
     // 리스트 초기화
     CLEAR_SIDO_LIST(state) {
@@ -57,6 +61,9 @@ const mapStore = {
     },
     CLEAR_BUS_LIST(state) {
       state.buses = [];
+    },
+    CLEAR_MYHOUSE_LIST(state) {
+      state.myHouses = [];
     },
   },
   actions: {
@@ -159,6 +166,28 @@ const mapStore = {
         let { data } = await http.get(`/apart/search`, { params });
         // console.log("돋보기 누르고 data : ", data);
         commit("SET_HOUSE_LIST", data);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    // 관심 아파트 등록하기
+    async insertMyApart({ commit }, house) {
+      console.log(commit);
+
+      try {
+        await http.post(`/apart/myHouse`, house);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    // 관심 아파트 목록 가져오기
+    async getMyApart({ commit }, userId) {
+      const params = { user_id: userId };
+      try {
+        let { data } = await http.get(`/apart/myHouse`, { params });
+        commit("SET_MYHOUSE_LIST", data);
       } catch (error) {
         console.log(error);
       }

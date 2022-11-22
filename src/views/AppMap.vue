@@ -1,17 +1,11 @@
 <template>
   <v-app>
-    <SearchView />
+    <router-view></router-view>
   </v-app>
 </template>
 
 <script>
-import SearchView from "@/components/map/SearchView.vue";
-
-export default {
-  components: {
-    SearchView,
-  },
-};
+export default {};
 </script>
 
 <style></style>

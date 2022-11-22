@@ -72,7 +72,17 @@
 
           <div id="roadview" style="width: 100%; height: 300px"></div>
           <v-card-text>
-            <div class="my-4 text-subtitle-1">주소</div>
+            <div class="text-right" style="display: block" id="emptyHeart">
+              <v-btn icon id="myHouseBtn" @click="addMyHouse"
+                ><font-awesome-icon icon="fa-regular fa-heart" class="fa-xl" style="color: red" />
+              </v-btn>
+            </div>
+            <div class="text-right" style="display: none" id="fullHeart">
+              <v-btn icon id="myHouseBtn" @click="addMyHouse"
+                ><font-awesome-icon icon="fa-solid fa-heart" class="fa-xl" style="color: red" />
+              </v-btn>
+            </div>
+            <div class="m-0 text-subtitle-1">주소</div>
           </v-card-text>
 
           <v-divider class="mx-4"></v-divider>
@@ -88,32 +98,32 @@
       <div id="map">
         <div id="infra">
           <v-card elevation="5" width="50">
-            <v-list id="category" dense rounded>
-              <v-list-item link class="px-0">
-                <v-img src="@/assets/img/school_icon.png" width="10px" @click="getSchoolInfo"></v-img>
-              </v-list-item>
-              <v-list-item link class="px-0">
-                <v-img src="@/assets/img/bus_icon.png" width="10px" @click="getBusInfo"></v-img>
-              </v-list-item>
-              <v-list-item id="BK9" link class="px-0">
-                <v-img src="@/assets/img/bank_icon.png" width="10px"></v-img>
-              </v-list-item>
-              <v-list-item id="MT1" link class="px-0">
-                <v-img src="@/assets/img/mart_icon.png" width="10px"></v-img>
-              </v-list-item>
-              <v-list-item id="PM9" link class="px-0">
-                <v-img src="@/assets/img/pharmacy_icon.png" width="10px"></v-img>
-              </v-list-item>
-              <v-list-item id="OL7" link class="px-0">
-                <v-img src="@/assets/img/gas_icon.png" width="10px"></v-img>
-              </v-list-item>
-              <v-list-item id="CE7" link class="px-0">
-                <v-img src="@/assets/img/cafe_icon.png" width="10px"></v-img>
-              </v-list-item>
-              <v-list-item id="CS2" link class="px-0">
-                <v-img src="@/assets/img/store_icon.png" width="10px"></v-img>
-              </v-list-item>
-            </v-list>
+            <ul id="category" ref="category">
+              <li id="BK9" data-order="0" @click="onClickCategory(0)">
+                <span><v-img src="@/assets/img/bank_icon.png"></v-img></span>
+                은행
+              </li>
+              <li id="MT1" data-order="1" @click="onClickCategory(1)">
+                <span><v-img src="@/assets/img/mart_icon.png"></v-img></span>
+                마트
+              </li>
+              <li id="PM9" data-order="2" @click="onClickCategory(2)">
+                <span><v-img src="@/assets/img/pharmacy_icon.png"></v-img></span>
+                약국
+              </li>
+              <li id="OL7" data-order="3" @click="onClickCategory(3)">
+                <span><v-img src="@/assets/img/gas_icon.png"></v-img></span>
+                주유소
+              </li>
+              <li id="CE7" data-order="4" @click="onClickCategory(4)">
+                <span><v-img src="@/assets/img/cafe_icon.png"></v-img></span>
+                카페
+              </li>
+              <li id="CS2" data-order="5" @click="onClickCategory(5)">
+                <span><v-img src="@/assets/img/store_icon.png"></v-img></span>
+                편의점
+              </li>
+            </ul>
           </v-card>
         </div>
       </div>
@@ -131,11 +141,15 @@ export default {
     } else {
       const script = document.createElement("script");
       /* global kakao */
+      console.log("mounted");
       script.onload = () => kakao.maps.load(this.initMap);
-      script.src = "//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=9f2f61f8fb619932f1da3bd45427cbcd";
+      script.src =
+        "//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=9f2f61f8fb619932f1da3bd45427cbcd&libraries=services";
       document.head.appendChild(script);
     }
   },
+  //36.366701,
+  //127.344307,
   data() {
     return {
       sido: null,
@@ -143,17 +157,24 @@ export default {
       dong: null,
       markers: [],
       tempMarkers: [],
-      curlat: 36.366701,
-      curlng: 127.344307,
+      curlat: 36.355600828062805,
+      curlng: 127.29918461338437,
       markerParam: {
         arr: [], // 마커 표시할 위치 담은 배열
         txt: "", // 표시할 이미지 다르게 하기위한 마커 이름 house, housepick, school, current, bus, hospital...
       },
       keyword: "",
+      house: null, // 리스트에서 선택한 house
+      // 카테고리 검색 관련 변수
+      inframarkers: [],
+      placeOverlay: null,
+      contentNode: null,
+      currCategory: "",
+      ps: null,
     };
   },
   computed: {
-    ...mapState("mapStore", ["sidos", "guguns", "dongs", "houses", "schools", "buses"]),
+    ...mapState("mapStore", ["sidos", "guguns", "dongs", "houses", "schools", "buses", "myHouses"]),
   },
   async created() {
     this.CLEAR_SIDO_LIST();
@@ -163,6 +184,10 @@ export default {
     this.CLEAR_SCHOOL_LIST();
     this.CLEAR_BUS_LIST();
     this.getSido(); // 시도 정보 가져오기
+
+    // 관심 아파트 목록 가져오기
+    this.getMyApart("ssafy@ssafy.com");
+    console.log("내가 찜한 집 : ", this.myHouses);
   },
   methods: {
     ...mapActions("mapStore", [
@@ -174,6 +199,8 @@ export default {
       "getCurSchool",
       "getCurBus",
       "getByKeyword",
+      "insertMyApart",
+      "getMyApart",
     ]),
     ...mapMutations("mapStore", [
       "CLEAR_SIDO_LIST",
@@ -182,6 +209,7 @@ export default {
       "CLEAR_HOUSE_LIST",
       "CLEAR_SCHOOL_LIST",
       "CLEAR_BUS_LIST",
+      "CLEAR_MYHOUSE_LIST",
     ]),
 
     // 구군 정보 가져오기
@@ -226,7 +254,7 @@ export default {
 
         if (!(this.houses && this.houses.length != 0)) {
           alert("매물 정보가 없습니다. ");
-          this.initMap();
+          // this.initMap();
           // 현재 위치 아파트 가져오기
         } else {
           this.markerParam.arr = this.houses;
@@ -249,6 +277,9 @@ export default {
         let position = await this.getMyGps();
         this.curlat = position.coords.latitude;
         this.curlng = position.coords.longitude;
+
+        //위도 :  35.907757
+        //경도 :  127.766922
       } catch (error) {
         alert("현재 위치를 표시할 수 없습니다. ");
       }
@@ -256,8 +287,9 @@ export default {
 
     // 지도 표시
     async initMap() {
+      console.log("initMap() 호출");
       // 현재 위치 기준으로 표시
-      this.currentLoc();
+      // await this.currentLoc();
 
       const container = document.getElementById("map");
       const options = {
@@ -267,19 +299,32 @@ export default {
 
       this.map = new kakao.maps.Map(container, options);
 
-      // 지도 타입 변경 컨트롤을 생성한다
+      // 지도 타입 변경
       var mapTypeControl = new kakao.maps.MapTypeControl();
 
-      // 지도의 상단 우측에 지도 타입 변경 컨트롤을 추가한다
       this.map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
 
-      // 지도에 확대 축소 컨트롤을 생성한다
       var zoomControl = new kakao.maps.ZoomControl();
 
-      // 지도의 우측에 확대 축소 컨트롤을 추가한다
       this.map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
 
       //===================== 카테고리별 장소 검색 관련 코드 =========================
+      this.placeOverlay = new kakao.maps.CustomOverlay({ zIndex: 1 });
+      this.contentNode = document.createElement("div");
+      this.currCategory = "";
+      this.ps = new kakao.maps.services.Places(this.map);
+
+      kakao.maps.event.addListener(this.map, "idle2", this.searchPlaces());
+
+      this.contentNode.className = "placeinfo_wrap";
+
+      this.addEventHandle(this.contentNode, "mousedown", kakao.maps.event.preventMap);
+      this.addEventHandle(this.contentNode, "touchstart", kakao.maps.event.preventMap);
+
+      this.placeOverlay.setContent(this.contentNode);
+
+      // 각 카테고리에 클릭 이벤트를 등록합니다
+      // this.addCategoryClickEvent();
       //=================================================================================
 
       // 현재 위치에 마커 표시
@@ -301,7 +346,6 @@ export default {
 
       if (!(this.houses && this.houses.length != 0)) {
         alert("현재 주변 매물 정보가 없습니다. ");
-        this.initMap();
       } else {
         this.markerParam.arr = this.houses;
         this.markerParam.txt = "house";
@@ -330,8 +374,10 @@ export default {
       for (let i = 0; i < arr.length; i++) {
         let lng = arr[i].lng;
         let lat = arr[i].lat;
-        this.markers.push([parseFloat(lat), parseFloat(lng)]);
+        this.markers.push([parseFloat(lat), parseFloat(lng), arr[i].apartmentName, arr[i]]);
       }
+
+      if (txt == "current") this.markers[0][2] = "나예요";
 
       // 마커 이미지 속성 셋팅
       var imageSrc;
@@ -350,24 +396,55 @@ export default {
       var imageOption = { offset: new kakao.maps.Point(13, 37) };
 
       var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
+      // ===========================================================
 
-      let positions = this.markers.map((position) => new kakao.maps.LatLng(...position));
+      let positions = [];
+      for (let i = 0; i < this.markers.length; i++) {
+        positions.push({
+          latlng: new kakao.maps.LatLng(this.markers[i][0], this.markers[i][1]),
+          title: this.markers[i][2],
+          obj: this.markers[i][3],
+        });
+      }
+
+      let temp = [];
+      var bounds = new kakao.maps.LatLngBounds();
+      for (let i = 0; i < positions.length; i++) {
+        let marker = new kakao.maps.Marker({
+          map: this.map,
+          position: positions[i].latlng,
+          image: markerImage,
+          title: positions[i].title,
+          clickable: true,
+        });
+        temp.push(marker);
+        marker.setMap(this.map);
+        bounds.extend(positions[i].latlng);
+
+        // 인포 윈도우 ================================================
+        let iwContent = '<div style="padding:5px;">' + positions[i].title + "</div>",
+          iwRemoveable = true;
+
+        let infowindow = new kakao.maps.InfoWindow({
+          content: iwContent,
+          removable: iwRemoveable,
+        });
+
+        kakao.maps.event.addListener(marker, "mouseover", () => this.infowindowFunction(infowindow, this.map, marker));
+        kakao.maps.event.addListener(marker, "mouseout", () => infowindow.close());
+        // 클릭하면 detail card 열기 =============================================
+        kakao.maps.event.addListener(marker, "click", () => this.makeDetailCard(positions[i].obj));
+      }
 
       if (positions.length > 0) {
-        this.markers = positions.map(
-          (position) =>
-            new kakao.maps.Marker({
-              map: this.map,
-              position,
-              image: markerImage,
-              clickable: true,
-            })
-        );
-
-        const bounds = positions.reduce((bounds, latlng) => bounds.extend(latlng), new kakao.maps.LatLngBounds());
-
-        this.map.setBounds(bounds);
+        this.markers = temp.map((el) => el);
       }
+
+      this.map.setBounds(bounds);
+    },
+
+    infowindowFunction(infowindow, map, marker) {
+      infowindow.open(map, marker);
     },
 
     // 특정 아파트 선택시 해당 위치로 마커 보여주기
@@ -389,17 +466,26 @@ export default {
 
     // 상세정보 카드 만들기
     makeDetailCard(house) {
+      // display 상태 설정======================================
       let item = document.getElementById("detail_card_content");
       item.style.display = "block";
 
+      // house 정보 가져오기 ===================================
       let lat = house.lat;
       let lng = house.lng;
       let apartmentName = house.apartmentName;
+      // let aptCode = house.aptCode;
 
-      // detail card 정보 셋팅
+      // house값 셋팅 => 하트 누르면 해당 house 값이 매개변수로 넘어감============
+      this.house = house;
+
+      // detail card 정보 셋팅=============================================
       document.getElementById("apartmentName").innerHTML = apartmentName;
 
-      // 해당 위치로 마커 이동
+      // heart 상태================================================================
+      this.heartStatus();
+
+      // 해당 위치로 마커 이동==================================================
       this.map.panTo(new kakao.maps.LatLng(lat, lng));
       // 해당 마커 보여주기
       this.markerPick(house);
@@ -413,7 +499,15 @@ export default {
 
       // 특정 위치의 좌표와 가까운 로드뷰의 panoId를 추출하여 로드뷰를 띄운다.
       roadviewClient.getNearestPanoId(position, 50, function (panoId) {
-        roadview.setPanoId(panoId, position); //panoId와 중심좌표를 통해 로드뷰 실행
+        if (panoId == null) {
+          alert("로드뷰가 뜨지 않는 건물");
+          let imgsrc = require("@/assets/img/xbox_img.jpg");
+          document.getElementById(
+            "roadview"
+          ).innerHTML = `<img src=${imgsrc} alt="My Image" style="width:350px; height:100%">`;
+        } else {
+          roadview.setPanoId(panoId, position); //panoId와 중심좌표를 통해 로드뷰 실행
+        }
       });
     },
 
@@ -498,8 +592,221 @@ export default {
       }
     },
 
-    //======================== 카테고리별 장소 검색(은행, 마트, 약국, 주유소, 카페, 편의점) start
+    //==================================== 아파트 찜하기 기능
+    // 아파트 찜 버튼 눌렀을 때
+    async addMyHouse() {
+      await this.insertMyApart(this.house);
+      // 관심 아파트 목록 가져오기 => 버튼 누를 때마다 갱신 해준다.
+      this.getMyApart("ssafy@ssafy.com");
 
+      if (document.getElementById("emptyHeart").style.display == "none") {
+        document.getElementById("emptyHeart").style.display = "block";
+        document.getElementById("fullHeart").style.display = "none";
+      } else {
+        document.getElementById("emptyHeart").style.display = "none";
+        document.getElementById("fullHeart").style.display = "block";
+      }
+    },
+
+    // 하트 상태 체크
+    heartStatus() {
+      let flag = false;
+
+      for (let i = 0; i < this.myHouses.length; i++) {
+        if (this.myHouses[i].aptCode == this.house.aptCode) {
+          flag = true;
+        }
+      }
+
+      if (flag) {
+        // 찜목록에 있다면 => 하트를 꽉 찬 하트로
+        document.getElementById("emptyHeart").style.display = "none";
+        document.getElementById("fullHeart").style.display = "block";
+      } else {
+        // 없다면 빈 하트로
+        document.getElementById("emptyHeart").style.display = "block";
+        document.getElementById("fullHeart").style.display = "none";
+      }
+    },
+
+    //===========================================
+
+    //======================== 카테고리별 장소 검색(은행, 마트, 약국, 주유소, 카페, 편의점) start
+    // 엘리먼트에 이벤트 핸들러를 등록하는 함수입니다
+    addEventHandle(target, type, callback) {
+      console.log("addEventHandle() 호출");
+      if (target.addEventListener) {
+        target.addEventListener(type, callback);
+      } else {
+        target.attachEvent("on" + type, callback);
+      }
+    },
+
+    // 카테고리를 클릭했을 때 호출되는 함수입니다
+    onClickCategory(el) {
+      console.log("onClickCategory() 호출");
+
+      let tag = this.$refs.category.children[el];
+
+      var id = tag.id,
+        className = tag.className;
+
+      this.placeOverlay.setMap(null);
+
+      if (className === "on") {
+        this.currCategory = "";
+        this.changeCategoryClass();
+        this.removeMarker();
+      } else {
+        this.currCategory = id;
+        this.changeCategoryClass(tag);
+        this.searchPlaces();
+      }
+    },
+
+    // 클릭된 카테고리에만 클릭된 스타일을 적용하는 함수입니다
+    changeCategoryClass(el) {
+      console.log("changeCategoryClass() 호출");
+
+      var category = document.getElementById("category"),
+        children = category.children,
+        i;
+
+      for (i = 0; i < children.length; i++) {
+        children[i].className = "";
+      }
+
+      if (el) {
+        el.className = "on";
+      }
+    },
+
+    // 지도 위에 표시되고 있는 마커를 모두 제거합니다
+    removeMarker() {
+      console.log("removeMarker() 호출");
+      for (var i = 0; i < this.inframarkers.length; i++) {
+        this.inframarkers[i].setMap(null);
+      }
+      this.inframarkers = [];
+    },
+
+    // 카테고리 검색을 요청하는 함수입니다
+    searchPlaces() {
+      console.log("searchPlaces() 호출");
+      if (!this.currCategory) {
+        return;
+      }
+
+      // 커스텀 오버레이를 숨깁니다
+      this.placeOverlay.setMap(null);
+
+      // 지도에 표시되고 있는 마커를 제거합니다
+      this.removeMarker();
+
+      this.ps.categorySearch(this.currCategory, this.placesSearchCB, { useMapBounds: true });
+    },
+
+    // 장소검색이 완료됐을 때 호출되는 콜백함수 입니다
+    placesSearchCB(data, status) {
+      console.log("placesSearchCB() 호출");
+
+      if (status === kakao.maps.services.Status.OK) {
+        // 정상적으로 검색이 완료됐으면 지도에 마커를 표출합니다
+        this.displayPlaces(data);
+      } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
+        // 검색결과가 없는경우 해야할 처리가 있다면 이곳에 작성해 주세요
+      } else if (status === kakao.maps.services.Status.ERROR) {
+        // 에러로 인해 검색결과가 나오지 않은 경우 해야할 처리가 있다면 이곳에 작성해 주세요
+      }
+    },
+
+    // 지도에 마커를 표출하는 함수입니다
+    displayPlaces(places) {
+      console.log("displayPlaces() 호출");
+
+      // 몇번째 카테고리가 선택되어 있는지 얻어옵니다
+      // 이 순서는 스프라이트 이미지에서의 위치를 계산하는데 사용됩니다
+      var order = document.getElementById(this.currCategory).getAttribute("data-order");
+
+      for (var i = 0; i < places.length; i++) {
+        // 마커를 생성하고 지도에 표시합니다
+        let inframarker = this.addMarker(new kakao.maps.LatLng(places[i].y, places[i].x), order);
+
+        // 마커와 검색결과 항목을 클릭 했을 때
+        // 장소정보를 표출하도록 클릭 이벤트를 등록합니다
+
+        // console.log("")
+        // this.displayPlaceInfo(places[i])
+        kakao.maps.event.addListener(inframarker, "click", () => console.log("places 출력2 ", places[i]));
+
+        // (function (inframarker, place) {
+        //   kakao.maps.event.addListener(inframarker, "click", function () {
+        //     console.log(place);
+        //     // this.displayPlaceInfo(place);
+        //   });
+        // })(inframarker, places[i]);
+      }
+    },
+
+    // 마커를 생성하고 지도 위에 마커를 표시하는 함수입니다
+    addMarker(position, order) {
+      console.log("addMarker() 호출");
+
+      let imageSrc = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/places_category.png", // 마커 이미지 url, 스프라이트 이미지를 씁니다
+        imageSize = new kakao.maps.Size(27, 28), // 마커 이미지의 크기
+        imgOptions = {
+          spriteSize: new kakao.maps.Size(72, 208), // 스프라이트 이미지의 크기
+          spriteOrigin: new kakao.maps.Point(46, order * 36), // 스프라이트 이미지 중 사용할 영역의 좌상단 좌표
+          offset: new kakao.maps.Point(11, 28), // 마커 좌표에 일치시킬 이미지 내에서의 좌표
+        },
+        markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imgOptions),
+        marker = new kakao.maps.Marker({
+          position: position, // 마커의 위치
+          image: markerImage,
+        });
+
+      marker.setMap(this.map); // 지도 위에 마커를 표출합니다
+      this.inframarkers.push(marker); // 배열에 생성된 마커를 추가합니다
+
+      return marker;
+    },
+
+    // 클릭한 마커에 대한 장소 상세정보를 커스텀 오버레이로 표시하는 함수입니다
+    displayPlaceInfo(place) {
+      console.log("displayPlaceInfo() 호출");
+
+      var content =
+        '<div class="placeinfo">' +
+        '   <a class="title" href="' +
+        place.place_url +
+        '" target="_blank" title="' +
+        place.place_name +
+        '">' +
+        place.place_name +
+        "</a>";
+
+      if (place.road_address_name) {
+        content +=
+          '    <span title="' +
+          place.road_address_name +
+          '">' +
+          place.road_address_name +
+          "</span>" +
+          '  <span class="jibun" title="' +
+          place.address_name +
+          '">(지번 : ' +
+          place.address_name +
+          ")</span>";
+      } else {
+        content += '    <span title="' + place.address_name + '">' + place.address_name + "</span>";
+      }
+
+      content += '    <span class="tel">' + place.phone + "</span>" + "</div>" + '<div class="after"></div>';
+
+      this.contentNode.innerHTML = content;
+      this.placeOverlay.setPosition(new kakao.maps.LatLng(place.y, place.x));
+      this.placeOverlay.setMap(this.map);
+    },
     //======================== 카테고리별 장소 검색(은행, 마트, 약국, 주유소, 카페, 편의점) end
   },
 };
@@ -525,8 +832,139 @@ a:hover {
 
 #infra {
   position: absolute;
-  right: 2px;
-  top: 300px;
+  right: 15px;
+  top: 250px;
   z-index: 2;
+}
+
+/* 카테고리 */
+#category {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  border-radius: 5px;
+  border: 1px solid #909090;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+  background: #fff;
+  overflow: hidden;
+  z-index: 2;
+  padding-left: 0;
+}
+#category li {
+  float: left;
+  list-style: none;
+  width: 50px;
+  border-right: 1px solid #acacac;
+  padding: 2px 0;
+  margin: 2px 0;
+  text-align: center;
+  cursor: pointer;
+}
+#category li.on {
+  background: #eee;
+}
+#category li:hover {
+  background: #ffe6e6;
+  border-left: 1px solid #acacac;
+  margin-left: -1px;
+}
+#category li:last-child {
+  margin-right: 0;
+  border-right: 0;
+}
+#category li span {
+  display: block;
+  margin: 0 auto 3px;
+  width: 27px;
+  height: 28px;
+}
+#category li .category_bg {
+  background: url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/places_category.png) no-repeat;
+}
+#category li .bank {
+  background-position: -10px 0;
+}
+#category li .mart {
+  background-position: -10px -36px;
+}
+#category li .pharmacy {
+  background-position: -10px -72px;
+}
+#category li .oil {
+  background-position: -10px -108px;
+}
+#category li .cafe {
+  background-position: -10px -144px;
+}
+#category li .store {
+  background-position: -10px -180px;
+}
+#category li.on .category_bg {
+  background-position-x: -46px;
+}
+.placeinfo_wrap {
+  position: absolute;
+  bottom: 28px;
+  left: -150px;
+  width: 300px;
+}
+.placeinfo {
+  position: relative;
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 10px;
+  background: #fff;
+}
+.placeinfo:nth-of-type(n) {
+  border: 0;
+  box-shadow: 0px 1px 2px #888;
+}
+.placeinfo_wrap .after {
+  content: "";
+  position: relative;
+  margin-left: -12px;
+  left: 50%;
+  width: 22px;
+  height: 12px;
+  background: url("https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/vertex_white.png");
+}
+.placeinfo a,
+.placeinfo a:hover,
+.placeinfo a:active {
+  color: #fff;
+  text-decoration: none;
+}
+.placeinfo a,
+.placeinfo span {
+  display: block;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.placeinfo span {
+  margin: 5px 5px 0 5px;
+  cursor: default;
+  font-size: 13px;
+}
+.placeinfo .title {
+  font-weight: bold;
+  font-size: 14px;
+  border-radius: 6px 6px 0 0;
+  margin: -1px -1px 0 -1px;
+  padding: 10px;
+  color: #fff;
+  background: #d95050;
+  background: #d95050 url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/arrow_white.png) no-repeat right 14px
+    center;
+}
+.placeinfo .tel {
+  color: #0f7833;
+}
+.placeinfo .jibun {
+  color: #999;
+  font-size: 11px;
+  margin-top: 0;
 }
 </style>
