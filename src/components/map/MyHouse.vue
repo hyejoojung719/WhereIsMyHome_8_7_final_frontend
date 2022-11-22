@@ -135,9 +135,13 @@ export default {
       this.map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
 
       // 관심 매물들 마커 표시
-      this.markerParam.arr = this.myHouses;
-      this.markerParam.txt = "house";
-      this.displayMarkers();
+      if (this.myHouses.length != 0) {
+        this.markerParam.arr = this.myHouses;
+        this.markerParam.txt = "house";
+        this.displayMarkers();
+      } else {
+        alert("현재 관심 매물이 없습니다.");
+      }
     },
 
     //지도에 marker 표시하기
