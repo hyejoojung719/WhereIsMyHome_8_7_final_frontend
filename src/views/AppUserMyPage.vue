@@ -6,11 +6,10 @@
         <v-row>
           <v-col cols="2">
             <v-sheet outlined rounded="lg">
-              <v-list v-model="link" mandatory color="transparent">
-                <!-- v-list-item 안에 링크 기입 시  -->
-                <v-list-item v-for="(list, idx) in linklists" :key="idx" :to="{ name: list.link }" link>
+              <v-list mandatory color="transparent">
+                <v-list-item v-for="(list, idx) in linklists" :key="idx" :to="{ name: list.link }" exact>
                   <v-list-item-content>
-                    <v-list-item-title> {{ list.title }} {{ list.link }} </v-list-item-title>
+                    <v-list-item-title> {{ list.title }}</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
 
@@ -41,16 +40,17 @@ export default {
   components: {
     UserHeaderView,
   },
-  data: () => ({
-    //이동 페이지 정보
-    //title : 명칭, link : route 정보
-    linklists: [
-      { title: "내 정보", link: "userMyPage" },
-      { title: "회원 정보 수정", link: "userUpdate" },
-      { title: "관심 아파트 정보", link: "userSignUp" },
-    ],
-    link: 1,
-  }),
+  data() {
+    return {
+      //이동 페이지 정보
+      //title : 명칭, link : route 정보
+      linklists: [
+        { title: "내 정보", link: "userMyPage" },
+        { title: "회원 정보 수정", link: "userUpdateMyPage" },
+        { title: "관심 아파트 정보", link: "userSignUp" },
+      ],
+    };
+  },
   methods: {
     async signout() {
       await this.$store.dispatch("userStore/signOut");
