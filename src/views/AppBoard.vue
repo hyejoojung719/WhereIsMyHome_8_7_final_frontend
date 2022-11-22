@@ -1,7 +1,5 @@
 <template>
-  <v-app>
-    <router-view></router-view>
-  </v-app>
+  <div>공지사항</div>
 </template>
 
 <script>

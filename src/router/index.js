@@ -13,6 +13,19 @@ const routes = [
     path: "/map",
     name: "map",
     component: () => import("@/views/AppMap.vue"),
+    redirect: "/map/list",
+    children: [
+      {
+        path: "list",
+        name: "apartList",
+        component: () => import("@/components/map/SearchView"),
+      },
+      {
+        path: "myhouse",
+        name: "myhouse",
+        component: () => import("@/components/map/MyHouse"),
+      },
+    ],
   },
   {
     path: "/user",
@@ -47,6 +60,12 @@ const routes = [
         ],
       },
     ],
+  },
+  {
+    path: "/board",
+    name: "board",
+    component: () => import("@/views/AppBoard"),
+    // redirect: "/board/list",
   },
 ];
 
