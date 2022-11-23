@@ -45,10 +45,11 @@ const routes = [
       {
         path: "mypage",
         name: "mypage",
+        redirect: "mypage/myinfo",
         component: () => import("@/views/AppUserMyPage.vue"),
         children: [
           {
-            path: "",
+            path: "myinfo",
             name: "userMyPage",
             component: () => import("@/components/user/UserMyPage.vue"),
           },
