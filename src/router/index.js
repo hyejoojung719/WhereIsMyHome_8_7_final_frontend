@@ -56,7 +56,7 @@ const routes = [
           {
             path: "update",
             name: "userUpdateMyPage",
-            componetn: () => import("@/components/user/UserUpdateMyPage.vue"),
+            component: () => import("@/components/user/UserUpdateMyPage.vue"),
           },
         ],
       },
