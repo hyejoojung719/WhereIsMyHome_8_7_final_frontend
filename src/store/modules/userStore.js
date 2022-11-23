@@ -112,6 +112,7 @@ const userStore = {
       }
     },
 
+    //회원 정보 삭제
     async deleteUserInfo({ commit }) {
       try {
         await http.delete("/users");
@@ -122,6 +123,15 @@ const userStore = {
         return true;
       } catch (error) {
         return false;
+      }
+    },
+
+    async findId(context, payload) {
+      try {
+        let { data } = await http.post("/users/find", payload);
+        return data;
+      } catch (error) {
+        return null;
       }
     },
   },

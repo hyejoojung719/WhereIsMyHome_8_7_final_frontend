@@ -46,6 +46,11 @@ const routes = [
     component: () => import("@/views/AppUser.vue"),
     children: [
       {
+        path: "findID",
+        name: "userFindID",
+        component: () => import("@/components/user/UserFindId.vue"),
+      },
+      {
         path: "signin",
         name: "userSignIn",
         component: () => import("@/components/user/UserSignIn.vue"),
