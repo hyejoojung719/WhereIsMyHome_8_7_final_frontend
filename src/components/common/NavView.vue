@@ -8,9 +8,6 @@
     <router-link :to="{ name: 'apartList' }">
       <span class="white--text px-5">실거래가 조회</span>
     </router-link>
-    <router-link :to="{ name: 'myhouse' }">
-      <span class="white--text px-5">관심 아파트</span>
-    </router-link>
     <router-link :to="{ name: 'home' }">
       <span class="white--text px-5">부동산 뉴스</span>
     </router-link>
@@ -23,6 +20,9 @@
     <template v-else>
       <router-link :to="{ name: 'mypage', params: { user_id: userInfo.user_id } }">
         <span class="white--text px-5">마이페이지</span>
+      </router-link>
+      <router-link :to="{ name: 'myhouse' }">
+        <span class="white--text px-5">관심 아파트</span>
       </router-link>
       <v-btn class="white--text px-5" href="#" @click.prevent="signout" style="font-size: 16px" text>로그아웃</v-btn>
       <!-- <li class="nav-item">

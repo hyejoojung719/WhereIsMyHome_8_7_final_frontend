@@ -11,10 +11,14 @@ const mapStore = {
     schools: [],
     buses: [],
     myHouses: [],
+    dongObj: {},
   }),
   getters: {},
   mutations: {
     // state 셋팅
+    SET_DONGOBJ_LIST(state, dongObj) {
+      state.dongObj = dongObj;
+    },
     SET_SIDO_LIST(state, sidos) {
       sidos.forEach((sido) => {
         state.sidos.push({ value: sido.dongCode, text: sido.sidoName });
@@ -77,6 +81,19 @@ const mapStore = {
       try {
         let { data } = await http.get(`/apart/curApart`, { params });
         commit("SET_HOUSE_LIST", data);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    // 주소 가져오기
+    async getAddr({ commit }, dongCode) {
+      const params = {
+        dongCode: dongCode,
+      };
+      try {
+        let { data } = await http.get(`dong/addr`, { params });
+        commit("SET_DONGOBJ_LIST", data);
       } catch (error) {
         console.log(error);
       }
@@ -183,10 +200,9 @@ const mapStore = {
     },
 
     // 관심 아파트 목록 가져오기
-    async getMyApart({ commit } /*, userId*/) {
-      // const params = { user_id: userId };
+    async getMyApart({ commit }) {
       try {
-        let { data } = await http.get(`/apart/myHouse` /*, { params }*/);
+        let { data } = await http.get(`/apart/myHouse`);
         commit("SET_MYHOUSE_LIST", data);
       } catch (error) {
         console.log(error);

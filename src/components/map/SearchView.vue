@@ -82,7 +82,7 @@
                 ><font-awesome-icon icon="fa-solid fa-heart" class="fa-xl" style="color: red" />
               </v-btn>
             </div>
-            <div class="m-0 text-subtitle-1">주소</div>
+            <div class="m-0 text-subtitle-1" id="address">주소</div>
           </v-card-text>
 
           <v-divider class="mx-4"></v-divider>
@@ -174,7 +174,8 @@ export default {
     };
   },
   computed: {
-    ...mapState("mapStore", ["sidos", "guguns", "dongs", "houses", "schools", "buses", "myHouses"]),
+    ...mapState("mapStore", ["sidos", "guguns", "dongs", "houses", "schools", "buses", "myHouses", "dongObj"]),
+    ...mapState("userStore", ["userInfo"]),
   },
   async created() {
     this.CLEAR_SIDO_LIST();
@@ -186,7 +187,8 @@ export default {
     this.getSido(); // 시도 정보 가져오기
 
     // 관심 아파트 목록 가져오기
-    this.getMyApart("ssafy@ssafy.com");
+    this.getMyApart(this.userInfo.user_id);
+    console.log("로그인한 계정 : ", this.userInfo.user_id);
     console.log("내가 찜한 집 : ", this.myHouses);
   },
   methods: {
@@ -201,6 +203,7 @@ export default {
       "getByKeyword",
       "insertMyApart",
       "getMyApart",
+      "getAddr",
     ]),
     ...mapMutations("mapStore", [
       "CLEAR_SIDO_LIST",
@@ -465,12 +468,18 @@ export default {
     },
 
     // 상세정보 카드 만들기
-    makeDetailCard(house) {
+    async makeDetailCard(house) {
+      console.log("house : ", house);
+
       // display 상태 설정======================================
       let item = document.getElementById("detail_card_content");
       item.style.display = "block";
 
       // house 정보 가져오기 ===================================
+      let dongCode = house.dongCode;
+      await this.getAddr(dongCode);
+      let address =
+        this.dongObj.sidoName + " " + this.dongObj.gugunName + " " + this.dongObj.dongName + " " + house.jibun;
       let lat = house.lat;
       let lng = house.lng;
       let apartmentName = house.apartmentName;
@@ -481,6 +490,7 @@ export default {
 
       // detail card 정보 셋팅=============================================
       document.getElementById("apartmentName").innerHTML = apartmentName;
+      document.getElementById("address").innerHTML = address;
 
       // heart 상태================================================================
       this.heartStatus();
@@ -597,7 +607,7 @@ export default {
     async addMyHouse() {
       await this.insertMyApart(this.house);
       // 관심 아파트 목록 가져오기 => 버튼 누를 때마다 갱신 해준다.
-      this.getMyApart("ssafy@ssafy.com");
+      this.getMyApart(this.userInfo.user_id);
 
       if (document.getElementById("emptyHeart").style.display == "none") {
         document.getElementById("emptyHeart").style.display = "block";
@@ -833,7 +843,7 @@ a:hover {
 #infra {
   position: absolute;
   right: 15px;
-  top: 250px;
+  top: 300px;
   z-index: 2;
 }
 

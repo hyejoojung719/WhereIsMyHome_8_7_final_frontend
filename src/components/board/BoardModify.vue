@@ -1,11 +1,12 @@
 <template>
-  <div id="app" class="my-16 mx-16">
+  <div id="app" class="my-16 mx-16 px-16 py-5">
     <v-col cols="12" class="py-0 px-0">
       <v-text-field label="제목 입력" solo v-model="subject"></v-text-field>
     </v-col>
     <vue-editor v-model="content" style="height: 500px" :editorToolbar="customToolbar"></vue-editor>
     <div class="text-right mt-16">
-      <v-btn depressed color="secondary" class="my-5 mx-5" @click="modifyComplete"> 수정 완료 </v-btn>
+      <v-btn depressed color="secondary" class="my-5" @click="modifyComplete"> 수정 완료 </v-btn>
+      <v-btn depressed color="secondary" class="my-5 mx-5 ml-2" @click="moveList"> 수정 취소 </v-btn>
     </div>
   </div>
 </template>
@@ -22,8 +23,6 @@ export default {
     ...mapState("boardStore", ["board"]),
   },
   created() {
-    // this.viewBoard(this.$route.params.articleNo);
-    // console.log("board 정보 : :: ", this.board);
     this.subject = this.board.subject;
     this.content = this.board.content;
   },
@@ -49,17 +48,29 @@ export default {
   },
   methods: {
     ...mapActions("boardStore", ["modifyBoard"]),
-    modifyComplete() {
-      let board = {
-        userId: this.board.userId,
-        subject: this.subject,
-        content: this.content,
-        hit: this.board.hit,
-        registerTime: this.board.registerTime,
-      };
+    async modifyComplete() {
+      if (this.subject == "") {
+        alert("제목을 입력해주세요.");
+      } else if (this.content == "") {
+        alert("내용을 입력해주세요.");
+      } else {
+        let board = {
+          articleNo: this.board.articleNo,
+          userId: this.board.userId,
+          subject: this.subject,
+          content: this.content,
+          hit: this.board.hit,
+          registerTime: this.board.registerTime,
+        };
 
-      this.modifyBoard(board);
-      alert("수정 완료!!!");
+        if (confirm("정말 수정하시겠습니까?")) {
+          await this.modifyBoard(board);
+          alert("수정 완료!!!");
+          this.$router.push({ name: "boardlist" });
+        }
+      }
+    },
+    moveList() {
       this.$router.push({ name: "boardlist" });
     },
   },
