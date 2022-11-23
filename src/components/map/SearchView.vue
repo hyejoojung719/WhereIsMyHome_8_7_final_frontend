@@ -4,7 +4,7 @@
       <v-container fluid>
         <v-row align="center">
           <v-col class="d-flex" sm="3">
-            <v-select v-model="sido" :items="sidos" @change="gugunList" solo return-object></v-select>
+            <v-select v-model="sido" height="50" :items="sidos" @change="gugunList" solo return-object></v-select>
           </v-col>
           <v-col class="d-flex" sm="2">
             <v-select v-model="gugun" :items="guguns" @change="dongList" solo return-object></v-select>
@@ -12,13 +12,14 @@
           <v-col class="d-flex" sm="2">
             <v-select v-model="dong" :items="dongs" solo return-object></v-select>
           </v-col>
-          <v-btn color="secondary" @click="searchHouse">검색</v-btn>
+          <v-btn color="secondary" @click="searchHouse">검 색</v-btn>
         </v-row>
       </v-container>
     </v-app>
-    <div id="app" class="d-flex justify-content-start">
-      <v-app id="searchlist">
-        <v-card class="apartinfo mx-auto" v-if="houses && houses.length != 0" min-width="300" min-height="800">
+
+    <div id="map">
+      <div id="app" class="d-flex justify-content-start">
+        <v-app id="searchlist">
           <v-text-field
             solo
             label="아파트 이름 검색"
@@ -26,76 +27,114 @@
             @click:append="searchApart"
             v-model="keyword"
           ></v-text-field>
-          <v-list>
-            <v-list-item-group color="secondary">
-              <!-- @click="ddd(house)" -->
-              <v-list-item v-for="(house, i) in houses" :key="i">
-                <v-list-item-icon>
-                  <v-img src="@/assets/img/home_icon.png" width="30px"></v-img>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title @click="makeDetailCard(house)" v-text="house.apartmentName"></v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list-item-group>
-          </v-list>
-        </v-card>
-        <v-card v-else class="apartinfo mx-auto" min-width="300" min-height="800">
-          <v-text-field
-            solo
-            label="아파트 이름 검색"
-            append-icon="fa-search"
-            @click:append="searchApart"
-            v-model="keyword"
-          ></v-text-field>
-        </v-card>
-      </v-app>
-      <v-app id="detail_card">
-        <v-card
-          class="apartinfo mx-auto"
-          min-width="350"
-          min-height="800"
-          id="detail_card_content"
-          style="display: none"
-        >
-          <template slot="progress">
-            <v-progress-linear color="deep-purple" height="10" indeterminate></v-progress-linear>
-          </template>
+          <v-card
+            class="apartinfo mx-auto"
+            v-if="houses && houses.length != 0"
+            max-width="300"
+            min-width="300"
+            min-height="800"
+            color="rgba(255, 255, 255, 0)"
+          >
+            <v-list color="rgba(255, 255, 255, 0)">
+              <v-list-item-group color="secondary">
+                <v-list-item v-for="(house, i) in houses" :key="i">
+                  <v-list-item-icon>
+                    <v-img src="@/assets/img/home_icon.png" width="30px"></v-img>
+                  </v-list-item-icon>
+                  <v-list-item-content @click="makeDetailCard(house)">
+                    <v-list-item-title v-text="house.apartmentName"></v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list-item-group>
+            </v-list>
+          </v-card>
+          <v-card v-else class="apartinfo mx-auto" min-width="300" min-height="800"> </v-card>
+        </v-app>
+        <v-app id="detail_card">
+          <v-card
+            class="apartinfo mx-auto"
+            min-width="350"
+            max-width="400"
+            min-height="800"
+            id="detail_card_content"
+            style="display: block"
+            color="rgba(255, 255, 255, 0)"
+          >
+            <template slot="progress">
+              <v-progress-linear color="deep-purple" height="10" indeterminate></v-progress-linear>
+            </template>
 
-          <v-card-title>
-            <span id="apartmentName"></span>
-            <v-spacer></v-spacer>
-            <v-btn icon @click="closeDetailCard">
-              <v-icon>fa-close</v-icon>
-            </v-btn>
-          </v-card-title>
-
-          <div id="roadview" style="width: 100%; height: 300px"></div>
-          <v-card-text>
-            <div class="text-right" style="display: block" id="emptyHeart">
-              <v-btn icon id="myHouseBtn" @click="addMyHouse"
-                ><font-awesome-icon icon="fa-regular fa-heart" class="fa-xl" style="color: red" />
+            <div class="text-right px-5 pt-2">
+              <v-btn icon @click="closeDetailCard">
+                <font-awesome-icon icon="fa-solid fa-rectangle-xmark" class="fa-2x" style="color: #a27b5c" />
               </v-btn>
             </div>
-            <div class="text-right" style="display: none" id="fullHeart">
-              <v-btn icon id="myHouseBtn" @click="addMyHouse"
-                ><font-awesome-icon icon="fa-solid fa-heart" class="fa-xl" style="color: red" />
-              </v-btn>
+            <v-card-title class="pt-3">
+              <span id="apartmentName" class="text-h6 font-weight-bold"></span>
+            </v-card-title>
+
+            <div id="roadview" style="width: 100%; height: 300px"></div>
+            <v-card-text>
+              <div class="text-right" style="display: block" id="emptyHeart">
+                <v-btn icon id="myHouseBtn" @click="addMyHouse"
+                  ><font-awesome-icon icon="fa-regular fa-heart" class="fa-2x" style="color: red" />
+                </v-btn>
+              </div>
+              <div class="text-right" style="display: none" id="fullHeart">
+                <v-btn icon id="myHouseBtn" @click="addMyHouse"
+                  ><font-awesome-icon icon="fa-solid fa-heart" class="fa-2x" style="color: red" />
+                </v-btn>
+              </div>
+              <div class="m-0 text-subtitle-1 font-weight-medium text--primary" id="address">주소</div>
+              <div class="m-0 mt-2 text-subtitle-2 text--primary" id="address">
+                준공 년도 : <span id="buildYear" class="pl-1 text-subtitle-2 text--primary"> </span>
+              </div>
+            </v-card-text>
+
+            <v-divider class="mx-4"></v-divider>
+
+            <!-- <v-card-text>
+              <v-chip-group active-class="secondary accent-4 white--text" column>
+                <v-chip @click="viewDetail1">실거래가</v-chip>
+                <v-chip @click="viewDetail2">매물 정보</v-chip>
+              </v-chip-group>
+            </v-card-text> -->
+
+            <div style="width: 100%">
+              <div id="detailInfo1" class="my-5">
+                <v-sheet color="white">
+                  <v-sparkline
+                    :labels="labels"
+                    :value="value"
+                    height="100"
+                    padding="24"
+                    stroke-linecap="round"
+                    :smooth="16"
+                    :gradient="['#f72047', '#ffd200', '#1feaea']"
+                    :line-width="3"
+                    auto-draw
+                  >
+                  </v-sparkline>
+                </v-sheet>
+              </div>
+              <div id="detailInfo2">
+                <v-data-table
+                  dense
+                  :headers="headers"
+                  :items="details"
+                  :page.sync="page"
+                  :items-per-page="itemsPerPage"
+                  hide-default-footer
+                  class="elevation-1"
+                  @page-count="pageCount = $event"
+                ></v-data-table>
+                <div class="text-center pt-2">
+                  <v-pagination v-model="page" :length="pageCount" color="secondary"></v-pagination>
+                </div>
+              </div>
             </div>
-            <div class="m-0 text-subtitle-1" id="address">주소</div>
-          </v-card-text>
-
-          <v-divider class="mx-4"></v-divider>
-
-          <v-card-text>
-            <v-chip-group active-class="secondary accent-4 white--text" column>
-              <v-chip>매물 정보</v-chip>
-              <v-chip>실거래가</v-chip>
-            </v-chip-group>
-          </v-card-text>
-        </v-card>
-      </v-app>
-      <div id="map">
+          </v-card>
+        </v-app>
         <div id="infra">
           <v-card elevation="5" width="50">
             <ul id="category" ref="category">
@@ -148,10 +187,30 @@ export default {
       document.head.appendChild(script);
     }
   },
-  //36.366701,
-  //127.344307,
   data() {
     return {
+      // detailinfo1 start ----------------------
+      search: "",
+      page: 1,
+      pageCount: 0,
+      itemsPerPage: 10,
+      headers: [
+        {
+          text: "거래 금액",
+          align: "start",
+          filterable: false,
+          value: "dealamount",
+        },
+        { text: "계약 년", value: "dealYear" },
+        { text: "계약 월", value: "dealMonth" },
+        { text: "층", value: "floor" },
+        { text: "면적", value: "area" },
+      ],
+      details: [],
+
+      labels: [],
+      value: [],
+      // detailinfo1 end ------------------------
       sido: null,
       gugun: null,
       dong: null,
@@ -184,6 +243,7 @@ export default {
       "myHouses",
       "dongObj",
       "detailApart",
+      "amounts",
     ]),
     ...mapState("userStore", ["userInfo"]),
   },
@@ -197,9 +257,7 @@ export default {
     this.getSido(); // 시도 정보 가져오기
 
     // 관심 아파트 목록 가져오기
-    this.getMyApart(this.userInfo.user_id);
-    console.log("로그인한 계정 : ", this.userInfo.user_id);
-    console.log("내가 찜한 집 : ", this.myHouses);
+    if (this.userInfo.user_id) this.getMyApart(this.userInfo.user_id);
   },
   methods: {
     ...mapActions("mapStore", [
@@ -215,6 +273,7 @@ export default {
       "getMyApart",
       "getAddr",
       "getDetailApart",
+      "getAmount",
     ]),
     ...mapMutations("mapStore", [
       "CLEAR_SIDO_LIST",
@@ -225,6 +284,18 @@ export default {
       "CLEAR_BUS_LIST",
       "CLEAR_MYHOUSE_LIST",
     ]),
+
+    // detail card 관련============
+    // viewDetail1() {
+    //   document.getElementById("detailInfo1").style.display = "block";
+    //   document.getElementById("detailInfo2").style.display = "none";
+    // },
+    // viewDetail2() {
+    //   document.getElementById("detailInfo1").style.display = "none";
+    //   document.getElementById("detailInfo2").style.display = "block";
+    // },
+
+    //=============================
 
     // 구군 정보 가져오기
     gugunList() {
@@ -303,7 +374,7 @@ export default {
     async initMap() {
       console.log("initMap() 호출");
       // 현재 위치 기준으로 표시
-      // await this.currentLoc();
+      await this.currentLoc();
 
       const container = document.getElementById("map");
       const options = {
@@ -480,7 +551,7 @@ export default {
 
     // 상세정보 카드 만들기
     async makeDetailCard(house) {
-      console.log("house : ", house);
+      // console.log("house : ", house);
 
       // display 상태 설정======================================
       let item = document.getElementById("detail_card_content");
@@ -496,7 +567,23 @@ export default {
       let apartmentName = house.apartmentName;
       let aptCode = house.aptCode;
       await this.getDetailApart(aptCode);
-      console.log("detail : ", this.detailApart);
+      let buildYear = this.detailApart[0].buildYear;
+      this.details = this.detailApart;
+
+      // chart 값 셋팅
+      await this.getAmount(aptCode);
+      this.labels = [];
+      this.value = [];
+      // 년도 가져오기
+      for (let i = 0; i < this.amounts.length; i++) {
+        // console.log("년도 : ", this.amounts[i].dealYear);
+        this.labels.push(this.amounts[i].dealYear);
+      }
+      // value값(거래금액) 가져오기
+      for (let i = 0; i < this.amounts.length; i++) {
+        // console.log("년도 : ", this.amounts[i].dealamount);
+        this.value.push(parseInt(this.amounts[i].dealamount));
+      }
 
       // house값 셋팅 => 하트 누르면 해당 house 값이 매개변수로 넘어감============
       this.house = house;
@@ -504,6 +591,7 @@ export default {
       // detail card 정보 셋팅=============================================
       document.getElementById("apartmentName").innerHTML = apartmentName;
       document.getElementById("address").innerHTML = address;
+      document.getElementById("buildYear").innerHTML = buildYear;
 
       // heart 상태================================================================
       this.heartStatus();
@@ -618,16 +706,20 @@ export default {
     //==================================== 아파트 찜하기 기능
     // 아파트 찜 버튼 눌렀을 때
     async addMyHouse() {
-      await this.insertMyApart(this.house);
-      // 관심 아파트 목록 가져오기 => 버튼 누를 때마다 갱신 해준다.
-      this.getMyApart(this.userInfo.user_id);
-
-      if (document.getElementById("emptyHeart").style.display == "none") {
-        document.getElementById("emptyHeart").style.display = "block";
-        document.getElementById("fullHeart").style.display = "none";
+      if (!this.userInfo.user_id) {
+        alert("로그인 후 이용해주세요.");
       } else {
-        document.getElementById("emptyHeart").style.display = "none";
-        document.getElementById("fullHeart").style.display = "block";
+        await this.insertMyApart(this.house);
+        // 관심 아파트 목록 가져오기 => 버튼 누를 때마다 갱신 해준다.
+        this.getMyApart(this.userInfo.user_id);
+
+        if (document.getElementById("emptyHeart").style.display == "none") {
+          document.getElementById("emptyHeart").style.display = "block";
+          document.getElementById("fullHeart").style.display = "none";
+        } else {
+          document.getElementById("emptyHeart").style.display = "none";
+          document.getElementById("fullHeart").style.display = "block";
+        }
       }
     },
 
@@ -836,6 +928,10 @@ export default {
 </script>
 
 <style scoped>
+::v-deep .v-sheet.v-card:not(.v-sheet--outlined) {
+  box-shadow: none !important;
+}
+
 a {
   text-decoration: none !important;
 }
@@ -851,6 +947,20 @@ a:hover {
 .apartinfo {
   height: 800px;
   overflow-y: auto;
+}
+
+#searchlist {
+  position: absolute;
+  left: 0px;
+  z-index: 2;
+  background-color: rgba(255, 255, 255, 0.806);
+}
+
+#detail_card {
+  position: absolute;
+  left: 300px;
+  z-index: 2;
+  background-color: rgba(255, 255, 255, 0.806);
 }
 
 #infra {
@@ -989,5 +1099,18 @@ a:hover {
   color: #999;
   font-size: 11px;
   margin-top: 0;
+}
+
+::v-deep .v-btn:not(.v-btn--round).v-size--default {
+  height: 38px;
+  min-width: 70px;
+  padding: 0 16px;
+}
+
+::v-deep .d-flex.col-sm-3.col {
+  padding-bottom: 0;
+}
+::v-deep .d-flex.col-sm-2.col {
+  padding-bottom: 0;
 }
 </style>

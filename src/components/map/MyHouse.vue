@@ -1,71 +1,119 @@
 <template>
   <div id="app">
     <div id="app" class="d-flex justify-content-start">
-      <v-app id="searchlist">
-        <v-card class="apartinfo mx-auto" v-if="myHouses && myHouses.length != 0" min-width="300" min-height="800">
-          <v-list>
-            <v-list-item-group color="secondary">
-              <!-- @click="ddd(house)" -->
-              <v-list-item v-for="(house, i) in myHouses" :key="i">
-                <v-list-item-icon>
-                  <v-img src="@/assets/img/home_icon.png" width="30px"></v-img>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title @click="makeDetailCard(house)" v-text="house.apartmentName"></v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list-item-group>
-          </v-list>
-        </v-card>
-        <!-- 관심 매물이 없을 때 띄울 창 -->
-        <v-card v-else class="apartinfo mx-auto" min-width="300" min-height="800"> </v-card>
-      </v-app>
-      <v-app id="detail_card">
-        <v-card
-          class="apartinfo mx-auto"
-          min-width="350"
-          min-height="800"
-          id="detail_card_content"
-          style="display: none"
-        >
-          <template slot="progress">
-            <v-progress-linear color="deep-purple" height="10" indeterminate></v-progress-linear>
-          </template>
+      <div id="map">
+        <v-app id="searchlist">
+          <v-card
+            class="apartinfo mx-auto"
+            v-if="myHouses && myHouses.length != 0"
+            max-width="300"
+            min-width="300"
+            min-height="800"
+            color="rgba(255, 255, 255, 0)"
+          >
+            <v-list color="rgba(255, 255, 255, 0)">
+              <v-list-item-group color="secondary">
+                <!-- @click="ddd(house)" -->
+                <v-list-item v-for="(house, i) in myHouses" :key="i">
+                  <v-list-item-icon>
+                    <v-img src="@/assets/img/home_icon.png" width="30px"></v-img>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title @click="makeDetailCard(house)" v-text="house.apartmentName"></v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list-item-group>
+            </v-list>
+          </v-card>
+          <!-- 관심 매물이 없을 때 띄울 창 -->
+          <v-card v-else class="apartinfo mx-auto" min-width="300" min-height="800"> </v-card>
+        </v-app>
+        <v-app id="detail_card">
+          <v-card
+            class="apartinfo mx-auto"
+            min-width="350"
+            max-width="400"
+            min-height="800"
+            id="detail_card_content"
+            style="display: block"
+            color="rgba(255, 255, 255, 0)"
+          >
+            <template slot="progress">
+              <v-progress-linear color="deep-purple" height="10" indeterminate></v-progress-linear>
+            </template>
 
-          <v-card-title>
-            <span id="apartmentName"></span>
-            <v-spacer></v-spacer>
-            <v-btn icon @click="closeDetailCard">
-              <v-icon>fa-close</v-icon>
-            </v-btn>
-          </v-card-title>
-
-          <div id="roadview" style="width: 100%; height: 300px"></div>
-          <v-card-text>
-            <div class="text-right" style="display: block" id="emptyHeart">
-              <v-btn icon id="myHouseBtn" @click="addMyHouse"
-                ><font-awesome-icon icon="fa-regular fa-heart" class="fa-xl" style="color: red" />
+            <div class="text-right px-5 pt-2">
+              <v-btn icon @click="closeDetailCard">
+                <font-awesome-icon icon="fa-solid fa-rectangle-xmark" class="fa-2x" style="color: #a27b5c" />
               </v-btn>
             </div>
-            <div class="text-right" style="display: none" id="fullHeart">
-              <v-btn icon id="myHouseBtn" @click="addMyHouse"
-                ><font-awesome-icon icon="fa-solid fa-heart" class="fa-xl" style="color: red" />
-              </v-btn>
+            <v-card-title class="pt-3">
+              <span id="apartmentName" class="text-h6 font-weight-bold"></span>
+            </v-card-title>
+
+            <div id="roadview" style="width: 100%; height: 300px"></div>
+            <v-card-text>
+              <div class="text-right" style="display: block" id="emptyHeart">
+                <v-btn icon id="myHouseBtn" @click="addMyHouse"
+                  ><font-awesome-icon icon="fa-regular fa-heart" class="fa-2x" style="color: red" />
+                </v-btn>
+              </div>
+              <div class="text-right" style="display: none" id="fullHeart">
+                <v-btn icon id="myHouseBtn" @click="addMyHouse"
+                  ><font-awesome-icon icon="fa-solid fa-heart" class="fa-2x" style="color: red" />
+                </v-btn>
+              </div>
+              <div class="m-0 text-subtitle-1 font-weight-medium text--primary" id="address">주소</div>
+              <div class="m-0 mt-2 text-subtitle-2 text--primary" id="address">
+                준공 년도 : <span id="buildYear" class="pl-1 text-subtitle-2 text--primary"> </span>
+              </div>
+            </v-card-text>
+
+            <v-divider class="mx-4"></v-divider>
+
+            <!-- <v-card-text>
+              <v-chip-group active-class="secondary accent-4 white--text" column>
+                <v-chip @click="viewDetail1">실거래가</v-chip>
+                <v-chip @click="viewDetail2">매물 정보</v-chip>
+              </v-chip-group>
+            </v-card-text> -->
+
+            <div style="width: 100%">
+              <div id="detailInfo1" class="my-5">
+                <v-sheet color="white">
+                  <v-sparkline
+                    :labels="labels"
+                    :value="value"
+                    height="100"
+                    padding="24"
+                    stroke-linecap="round"
+                    :smooth="16"
+                    :gradient="['#f72047', '#ffd200', '#1feaea']"
+                    :line-width="3"
+                    auto-draw
+                  >
+                  </v-sparkline>
+                </v-sheet>
+              </div>
+              <div id="detailInfo2">
+                <v-data-table
+                  dense
+                  :headers="headers"
+                  :items="details"
+                  :page.sync="page"
+                  :items-per-page="itemsPerPage"
+                  hide-default-footer
+                  class="elevation-1"
+                  @page-count="pageCount = $event"
+                ></v-data-table>
+                <div class="text-center pt-2">
+                  <v-pagination v-model="page" :length="pageCount" color="secondary"></v-pagination>
+                </div>
+              </div>
             </div>
-            <div class="m-0 text-subtitle-1">주소</div>
-          </v-card-text>
-
-          <v-divider class="mx-4"></v-divider>
-
-          <v-card-text>
-            <v-chip-group active-class="secondary accent-4 white--text" column>
-              <v-chip>매물 정보</v-chip>
-              <v-chip>실거래가</v-chip>
-            </v-chip-group>
-          </v-card-text>
-        </v-card>
-      </v-app>
-      <div id="map"></div>
+          </v-card>
+        </v-app>
+      </div>
     </div>
   </div>
 </template>
@@ -90,6 +138,28 @@ export default {
   //127.344307,
   data() {
     return {
+      // detailinfo1 start ----------------------
+      search: "",
+      page: 1,
+      pageCount: 0,
+      itemsPerPage: 10,
+      headers: [
+        {
+          text: "거래 금액",
+          align: "start",
+          filterable: false,
+          value: "dealamount",
+        },
+        { text: "계약 년", value: "dealYear" },
+        { text: "계약 월", value: "dealMonth" },
+        { text: "층", value: "floor" },
+        { text: "면적", value: "area" },
+      ],
+      details: [],
+
+      labels: [],
+      value: [],
+      // detailinfo1 end ------------------------
       markers: [],
       tempMarkers: [],
       curlat: 36.355600828062805,
@@ -102,7 +172,7 @@ export default {
     };
   },
   computed: {
-    ...mapState("mapStore", ["houses", "myHouses"]),
+    ...mapState("mapStore", ["houses", "myHouses", "dongObj", "detailApart", "amounts"]),
     ...mapState("userStore", ["userInfo"]),
   },
   async created() {
@@ -113,7 +183,14 @@ export default {
     console.log("내가 찜한 집 : ", this.myHouses);
   },
   methods: {
-    ...mapActions("mapStore", ["getHouseList", "insertMyApart", "getMyApart"]),
+    ...mapActions("mapStore", [
+      "getHouseList",
+      "insertMyApart",
+      "getMyApart",
+      "getAddr",
+      "getDetailApart",
+      "getAmount",
+    ]),
     ...mapMutations("mapStore", ["CLEAR_HOUSE_LIST", "CLEAR_MYHOUSE_LIST"]),
 
     // 지도 표시
@@ -233,21 +310,48 @@ export default {
     },
 
     // 상세정보 카드 만들기
-    makeDetailCard(house) {
+    async makeDetailCard(house) {
+      // console.log("house : ", house);
+
       // display 상태 설정======================================
       let item = document.getElementById("detail_card_content");
       item.style.display = "block";
 
       // house 정보 가져오기 ===================================
+      let dongCode = house.dongCode;
+      await this.getAddr(dongCode);
+      let address =
+        this.dongObj.sidoName + " " + this.dongObj.gugunName + " " + this.dongObj.dongName + " " + house.jibun;
       let lat = house.lat;
       let lng = house.lng;
       let apartmentName = house.apartmentName;
+      let aptCode = house.aptCode;
+      await this.getDetailApart(aptCode);
+      let buildYear = this.detailApart[0].buildYear;
+      this.details = this.detailApart;
+
+      // chart 값 셋팅
+      await this.getAmount(aptCode);
+      this.labels = [];
+      this.value = [];
+      // 년도 가져오기
+      for (let i = 0; i < this.amounts.length; i++) {
+        // console.log("년도 : ", this.amounts[i].dealYear);
+        this.labels.push(this.amounts[i].dealYear);
+      }
+      // value값(거래금액) 가져오기
+      for (let i = 0; i < this.amounts.length; i++) {
+        // console.log("년도 : ", this.amounts[i].dealamount);
+        this.value.push(parseInt(this.amounts[i].dealamount));
+      }
 
       // house값 셋팅 => 하트 누르면 해당 house 값이 매개변수로 넘어감============
       this.house = house;
 
       // detail card 정보 셋팅=============================================
       document.getElementById("apartmentName").innerHTML = apartmentName;
+      document.getElementById("address").innerHTML = address;
+      document.getElementById("buildYear").innerHTML = buildYear;
 
       // heart 상태================================================================
       this.heartStatus();
@@ -347,6 +451,20 @@ a:hover {
 .apartinfo {
   height: 800px;
   overflow-y: auto;
+}
+
+#searchlist {
+  position: absolute;
+  left: 0px;
+  z-index: 2;
+  background-color: rgba(255, 255, 255, 0.806);
+}
+
+#detail_card {
+  position: absolute;
+  left: 300px;
+  z-index: 2;
+  background-color: rgba(255, 255, 255, 0.806);
 }
 
 #infra {

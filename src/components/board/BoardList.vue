@@ -26,7 +26,9 @@
         >
         </v-data-table>
         <div class="text-right">
-          <v-btn depressed color="secondary" class="my-5 mx-5" @click="moveWrite"> 글 작성 </v-btn>
+          <v-btn depressed color="secondary" class="my-5 mx-5" @click="moveWrite" v-if="userInfo.user_role === 'ADMIN'">
+            글 작성
+          </v-btn>
         </div>
         <div class="text-center pt-2">
           <v-pagination v-model="page" :length="pageCount" color="primary"></v-pagination>
@@ -71,6 +73,7 @@ export default {
   },
   computed: {
     ...mapState("boardStore", ["boards"]),
+    ...mapState("userStore", ["userInfo"]),
   },
   async created() {
     await this.getBoards();

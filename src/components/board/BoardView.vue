@@ -19,8 +19,12 @@
       <vue-editor :editorOptions="editorSettings" :value="this.board.content" disabled :editorToolbar="customToolbar" />
       <div class="text-right">
         <v-btn depressed color="secondary" class="my-5" @click="moveList"> 글 목록 </v-btn>
-        <v-btn depressed color="secondary" class="my-5 ml-2" @click="moveModify"> 글 수정 </v-btn>
-        <v-btn depressed color="secondary" class="my-5 ml-2" @click="deleteBtn"> 글 삭제 </v-btn>
+        <v-btn depressed color="secondary" class="my-5 ml-2" @click="moveModify" v-if="userInfo.user_role === 'ADMIN'">
+          글 수정
+        </v-btn>
+        <v-btn depressed color="secondary" class="my-5 ml-2" @click="deleteBtn" v-if="userInfo.user_role === 'ADMIN'">
+          글 삭제
+        </v-btn>
       </div>
     </div>
   </v-card>
@@ -36,6 +40,7 @@ export default {
   },
   computed: {
     ...mapState("boardStore", ["board"]),
+    ...mapState("userStore", ["userInfo"]),
   },
   data() {
     return {

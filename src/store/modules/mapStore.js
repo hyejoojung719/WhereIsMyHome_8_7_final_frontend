@@ -13,6 +13,7 @@ const mapStore = {
     myHouses: [],
     dongObj: {},
     detailApart: {},
+    amounts: {},
   }),
   getters: {},
   mutations: {
@@ -50,6 +51,9 @@ const mapStore = {
     SET_MYHOUSE_LIST(state, myHouses) {
       state.myHouses = myHouses;
     },
+    SET_AMOUNT_LIST(state, amounts) {
+      state.amounts = amounts;
+    },
 
     // 리스트 초기화
     CLEAR_SIDO_LIST(state) {
@@ -75,6 +79,20 @@ const mapStore = {
     },
   },
   actions: {
+    // 년도별 최대 거래금액 정보 가져오기
+    async getAmount({ commit }, aptCode) {
+      const params = {
+        aptCode: aptCode,
+      };
+
+      try {
+        let { data } = await http.get(`/apart/amount`, { params });
+        commit("SET_AMOUNT_LIST", data);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
     // 상세카드 정보 가져오기
     async getDetailApart({ commit }, aptCode) {
       const params = {
