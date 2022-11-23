@@ -74,9 +74,19 @@ const routes = [
         component: () => import("@/components/board/BoardList"),
       },
       {
-        path: "list",
+        path: "write",
         name: "boardwrite",
         component: () => import("@/components/board/BoardWrite"),
+      },
+      {
+        path: "view",
+        name: "boardview",
+        component: () => import("@/components/board/BoardView"),
+      },
+      {
+        path: "modify",
+        name: "boardmodify",
+        component: () => import("@/components/board/BoardModify"),
       },
     ],
   },

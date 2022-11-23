@@ -20,7 +20,9 @@
           hide-default-footer
           class="elevation-1"
           @page-count="pageCount = $event"
-        ></v-data-table>
+          @click:row="moveView"
+        >
+        </v-data-table>
         <div class="text-right">
           <v-btn depressed color="secondary" class="my-5 mx-5" @click="moveWrite"> 글 작성 </v-btn>
         </div>
@@ -41,7 +43,7 @@ export default {
       search: "",
       page: 1,
       pageCount: 0,
-      itemsPerPage: 5,
+      itemsPerPage: 10,
       headers: [
         {
           text: "글 번호",
@@ -56,9 +58,9 @@ export default {
       ],
       notices: [
         // {
-        //   article_no: 1,
-        //   title: "제목1",
-        //   user_id: "작성자1",
+        //   articleNo: 1,
+        //   subject: "제목1",
+        //   userId: "작성자1",
         //   hit: 0,
         //   register_time: 2022,
         // },
@@ -77,6 +79,12 @@ export default {
     ...mapActions("boardStore", ["getBoards"]),
     moveWrite() {
       this.$router.push({ name: "boardwrite" });
+    },
+    moveView(item) {
+      this.$router.push({
+        name: "boardview",
+        params: { articleNo: item.articleNo },
+      });
     },
   },
 };

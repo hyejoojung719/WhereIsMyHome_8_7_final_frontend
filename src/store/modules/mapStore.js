@@ -183,10 +183,10 @@ const mapStore = {
     },
 
     // 관심 아파트 목록 가져오기
-    async getMyApart({ commit }, userId) {
-      const params = { user_id: userId };
+    async getMyApart({ commit } /*, userId*/) {
+      // const params = { user_id: userId };
       try {
-        let { data } = await http.get(`/apart/myHouse`, { params });
+        let { data } = await http.get(`/apart/myHouse` /*, { params }*/);
         commit("SET_MYHOUSE_LIST", data);
       } catch (error) {
         console.log(error);
