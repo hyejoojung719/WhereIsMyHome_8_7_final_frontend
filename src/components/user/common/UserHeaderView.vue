@@ -3,7 +3,7 @@
     <v-row class="px-2">
       <h1>
         <v-icon x-large> mdi-account-circle </v-icon>
-        김싸피님 안녕하세요!
+        {{ userInfo.user_name }}님 안녕하세요!
       </h1>
     </v-row>
     <v-row>
@@ -13,7 +13,12 @@
 </template>
 
 <script>
-export default {};
+import { mapState } from "vuex";
+export default {
+  computed: {
+    ...mapState("userStore", ["userInfo"]),
+  },
+};
 </script>
 
 <style>
