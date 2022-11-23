@@ -58,6 +58,11 @@ const routes = [
             name: "userUpdateMyPage",
             component: () => import("@/components/user/UserUpdateMyPage.vue"),
           },
+          {
+            path: "delete",
+            name: "userDeleteMyPage",
+            component: () => import("@/components/user/UserDeleteMyPage.vue"),
+          },
         ],
       },
     ],

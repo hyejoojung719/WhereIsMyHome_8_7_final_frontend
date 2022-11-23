@@ -102,9 +102,23 @@ const userStore = {
       }
     },
 
+    //회원 정보 수정(비밀번호)
     async updatePassword(context, payload) {
       try {
         await http.put("/users/pass", payload);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    },
+
+    async deleteUserInfo({ commit }) {
+      try {
+        await http.delete("/users");
+        //userStore에 token 정보 지우기
+        commit("SET_TOKEN", { token: null });
+        //vuex store에 유저정보 비우기
+        commit("SET_USER_INFO", {});
         return true;
       } catch (error) {
         return false;
