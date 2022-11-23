@@ -44,10 +44,17 @@ const boardStore = {
       }
     },
     async modifyBoard({ commit }, board) {
-      console.log("viewBoard 들어옴");
+      console.log(commit);
       try {
-        let { data } = await http.put(`/board`, board);
-        commit("SET_BOARD", data);
+        await http.put(`/board`, board);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async deleteBoard({ commit }, articleNo) {
+      console.log(commit);
+      try {
+        await http.delete("/board/" + articleNo);
       } catch (error) {
         console.log(error);
       }

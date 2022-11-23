@@ -1,15 +1,17 @@
 <template>
   <div id="app">
     <v-app id="inspire">
-      <v-card>
+      <v-card class="mx-16 my-16 px-16 py-16">
         <v-card-title>
-          <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            label="Search"
-            single-line
-            hide-details
-          ></v-text-field>
+          <div style="width: 200px; padding-bottom: 20px">
+            <v-text-field
+              v-model="search"
+              append-icon="mdi-magnify"
+              label="Search"
+              single-line
+              hide-details
+            ></v-text-field>
+          </div>
         </v-card-title>
         <v-data-table
           :headers="headers"
@@ -70,8 +72,8 @@ export default {
   computed: {
     ...mapState("boardStore", ["boards"]),
   },
-  created() {
-    this.getBoards();
+  async created() {
+    await this.getBoards();
 
     this.notices = this.boards;
   },
@@ -90,4 +92,15 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+::v-deep .v-sheet.v-card:not(.v-sheet--outlined) {
+  box-shadow: none !important;
+}
+
+::v-deep tbody > tr:hover {
+  cursor: pointer;
+}
+/* ::v-deep .v-card__title {
+  padding: 50px;
+} */
+</style>

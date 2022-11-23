@@ -2,7 +2,7 @@
   <div id="app">
     <div id="app" class="d-flex justify-content-start">
       <v-app id="searchlist">
-        <v-card class="apartinfo mx-auto" v-if="myHouses && myHouses.length != 0" min-width="300" min-height="700">
+        <v-card class="apartinfo mx-auto" v-if="myHouses && myHouses.length != 0" min-width="300" min-height="800">
           <v-list>
             <v-list-item-group color="secondary">
               <!-- @click="ddd(house)" -->
@@ -18,13 +18,13 @@
           </v-list>
         </v-card>
         <!-- 관심 매물이 없을 때 띄울 창 -->
-        <v-card v-else class="apartinfo mx-auto" min-width="300" min-height="700"> </v-card>
+        <v-card v-else class="apartinfo mx-auto" min-width="300" min-height="800"> </v-card>
       </v-app>
       <v-app id="detail_card">
         <v-card
           class="apartinfo mx-auto"
           min-width="350"
-          min-height="700"
+          min-height="800"
           id="detail_card_content"
           style="display: none"
         >
@@ -103,12 +103,13 @@ export default {
   },
   computed: {
     ...mapState("mapStore", ["houses", "myHouses"]),
+    ...mapState("userStore", ["userInfo"]),
   },
   async created() {
     this.CLEAR_HOUSE_LIST();
 
     // 관심 아파트 목록 가져오기
-    this.getMyApart("ssafy@ssafy.com");
+    this.getMyApart();
     console.log("내가 찜한 집 : ", this.myHouses);
   },
   methods: {
@@ -289,7 +290,7 @@ export default {
       await this.insertMyApart(this.house);
 
       // 관심 아파트 목록 가져오기 => 버튼 누를 때마다 갱신 해준다.
-      this.getMyApart("ssafy@ssafy.com");
+      this.getMyApart(this.userInfo.user_id);
       console.log("찜버튼 누르고 : ", this.myHouses);
       console.log(document.getElementById("fullHeart").style.display);
 
@@ -339,12 +340,12 @@ a:hover {
 }
 #map {
   width: 100%;
-  height: 700px;
+  height: 800px;
   position: relative;
   z-index: 1;
 }
 .apartinfo {
-  height: 700px;
+  height: 800px;
   overflow-y: auto;
 }
 
