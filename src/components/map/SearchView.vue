@@ -174,7 +174,17 @@ export default {
     };
   },
   computed: {
-    ...mapState("mapStore", ["sidos", "guguns", "dongs", "houses", "schools", "buses", "myHouses", "dongObj"]),
+    ...mapState("mapStore", [
+      "sidos",
+      "guguns",
+      "dongs",
+      "houses",
+      "schools",
+      "buses",
+      "myHouses",
+      "dongObj",
+      "detailApart",
+    ]),
     ...mapState("userStore", ["userInfo"]),
   },
   async created() {
@@ -204,6 +214,7 @@ export default {
       "insertMyApart",
       "getMyApart",
       "getAddr",
+      "getDetailApart",
     ]),
     ...mapMutations("mapStore", [
       "CLEAR_SIDO_LIST",
@@ -483,7 +494,9 @@ export default {
       let lat = house.lat;
       let lng = house.lng;
       let apartmentName = house.apartmentName;
-      // let aptCode = house.aptCode;
+      let aptCode = house.aptCode;
+      await this.getDetailApart(aptCode);
+      console.log("detail : ", this.detailApart);
 
       // house값 셋팅 => 하트 누르면 해당 house 값이 매개변수로 넘어감============
       this.house = house;

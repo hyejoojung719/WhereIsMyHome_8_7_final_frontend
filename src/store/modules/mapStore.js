@@ -12,10 +12,14 @@ const mapStore = {
     buses: [],
     myHouses: [],
     dongObj: {},
+    detailApart: {},
   }),
   getters: {},
   mutations: {
     // state 셋팅
+    SET_DETAILAPART(state, detailApart) {
+      state.detailApart = detailApart;
+    },
     SET_DONGOBJ_LIST(state, dongObj) {
       state.dongObj = dongObj;
     },
@@ -71,6 +75,20 @@ const mapStore = {
     },
   },
   actions: {
+    // 상세카드 정보 가져오기
+    async getDetailApart({ commit }, aptCode) {
+      const params = {
+        aptCode: aptCode,
+      };
+
+      try {
+        let { data } = await http.get(`/apart/detailApart`, { params });
+        commit("SET_DETAILAPART", data);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
     // 현재 위치 아파트 리스트 가져오기
     async getCurHouseList({ commit }, curLocation) {
       const params = {
