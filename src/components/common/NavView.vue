@@ -1,9 +1,8 @@
 <template>
-  <v-app-bar color="primary accent-4" dense dark>
+  <v-app-bar :color="isAdmin ? 'secondary accent-4' : 'primary accent-4'" dense dark>
     <router-link :to="{ name: 'main' }"
       ><v-img src="@/assets/img/logo2.png" width="90px" class="ml-5"></v-img
     ></router-link>
-
     <v-spacer></v-spacer>
     <router-link :to="{ name: 'apartList' }">
       <span class="white--text px-5">실거래가 조회</span>
@@ -17,6 +16,9 @@
     <router-link :to="{ name: 'board' }">
       <span class="white--text px-5">공지사항</span>
     </router-link>
+    <router-link :to="{ name: 'adminUserList' }" v-if="userInfo.user_role === 'ADMIN'"
+      ><span class="white--text px-5">회원 관리</span></router-link
+    >
     <router-link :to="{ name: 'userSignIn' }" v-if="!!!userInfo.user_id">
       <span class="white--text px-5">로그인</span>
     </router-link>
@@ -37,6 +39,9 @@ import { mapState } from "vuex";
 export default {
   computed: {
     ...mapState("userStore", ["userInfo"]),
+    isAdmin() {
+      return this.userInfo.user_role === "ADMIN" ? true : false;
+    },
   },
   methods: {
     async signout() {
