@@ -8,7 +8,7 @@
         <v-list two-line class="mx-auto" style="width: 60vh">
           <v-list-item>
             <v-list-item-icon>
-              <v-icon color="secondary"> mdi-email </v-icon>
+              <v-icon :color="isMember ? 'primary' : 'secondary'"> mdi-email </v-icon>
             </v-list-item-icon>
 
             <v-list-item-content>
@@ -19,7 +19,7 @@
           <v-divider inset></v-divider>
           <v-list-item>
             <v-list-item-icon>
-              <v-icon color="secondary"> mdi-account-box </v-icon>
+              <v-icon :color="isMember ? 'primary' : 'secondary'"> mdi-account-box </v-icon>
             </v-list-item-icon>
 
             <v-list-item-content>
@@ -31,7 +31,7 @@
           <v-divider inset></v-divider>
           <v-list-item>
             <v-list-item-icon>
-              <v-icon color="secondary"> mdi-cake-variant-outline </v-icon>
+              <v-icon :color="isMember ? 'primary' : 'secondary'"> mdi-cake-variant-outline </v-icon>
             </v-list-item-icon>
 
             <v-list-item-content>
@@ -51,6 +51,7 @@ export default {
   data() {
     return {
       user: {},
+      isMember: true,
     };
   },
   computed: {
@@ -64,6 +65,7 @@ export default {
       this.user = response;
       this.user["user_birth"] = this.user["user_birth"].replace(/(\d{4})-(\d{2})-(\d{2})/, "$1년 $2월 $3일");
     }
+    this.isMember = this.userInfo.user_role === "MEMBER" ? true : false;
   },
 };
 </script>

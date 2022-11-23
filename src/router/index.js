@@ -28,6 +28,19 @@ const routes = [
     ],
   },
   {
+    path: "/admin",
+    name: "admin",
+    redirect: "admin/userList",
+    component: () => import("@/views/AppAdmin.vue"),
+    children: [
+      {
+        path: "userList",
+        name: "adminUserList",
+        component: () => import("@/components/user/AdminUserList.vue"),
+      },
+    ],
+  },
+  {
     path: "/user",
     name: "user",
     component: () => import("@/views/AppUser.vue"),
