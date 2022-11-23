@@ -18,7 +18,7 @@
     </v-app>
     <div id="app" class="d-flex justify-content-start">
       <v-app id="searchlist">
-        <v-card class="apartinfo mx-auto" v-if="houses && houses.length != 0" min-width="300" min-height="700">
+        <v-card class="apartinfo mx-auto" v-if="houses && houses.length != 0" min-width="300" min-height="800">
           <v-text-field
             solo
             label="아파트 이름 검색"
@@ -40,7 +40,7 @@
             </v-list-item-group>
           </v-list>
         </v-card>
-        <v-card v-else class="apartinfo mx-auto" min-width="300" min-height="700">
+        <v-card v-else class="apartinfo mx-auto" min-width="300" min-height="800">
           <v-text-field
             solo
             label="아파트 이름 검색"
@@ -54,7 +54,7 @@
         <v-card
           class="apartinfo mx-auto"
           min-width="350"
-          min-height="700"
+          min-height="800"
           id="detail_card_content"
           style="display: none"
         >
@@ -821,12 +821,12 @@ a:hover {
 }
 #map {
   width: 100%;
-  height: 700px;
+  height: 800px;
   position: relative;
   z-index: 1;
 }
 .apartinfo {
-  height: 700px;
+  height: 800px;
   overflow-y: auto;
 }
 
