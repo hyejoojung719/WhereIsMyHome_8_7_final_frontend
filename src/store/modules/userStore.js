@@ -28,7 +28,7 @@ const userStore = {
         let { data } = await http.post("/users/signIn", payload.signinInfo);
 
         let token = data.token;
-        console.log("발급받은 토큰 : ", token);
+        console.log("발급받은 토큰 : ", typeof token);
 
         // axios 요청 대신에 header에 access-token 추가
         // http.defaults.headers.common["access-token"] = token;
@@ -40,9 +40,9 @@ const userStore = {
         console.log("토큰 정보 : ", decodedToken);
 
         //vuex에 userInfo 정보 저장
-        const { userId } = decodedToken;
-        console.log("userId : {}", userId);
-        commit("SET_USER_INFO", { user_id: userId });
+        // const { userId } = decodedToken;
+        // console.log("userId : ", userId);
+        commit("SET_USER_INFO", data.userInfo);
 
         //vuex에 saveId 정보 저장
         const { saveCheck, saveId } = payload;
@@ -75,6 +75,36 @@ const userStore = {
     async regist(context, payload) {
       try {
         await http.post("/users", payload);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    },
+
+    // 회원 정보 가져오기(비밀번호 X)
+    async getUserInfo() {
+      try {
+        let { data } = await http.get("/users");
+        return data;
+      } catch (error) {
+        return false;
+      }
+    },
+
+    //회원 정보 수정(비밀번호 X)
+    async updateUserInfo({ commit }, payload) {
+      try {
+        await http.put("/users", payload);
+        commit("SET_USER_INFO", payload);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    },
+
+    async updatePassword(context, payload) {
+      try {
+        await http.put("/users/pass", payload);
         return true;
       } catch (error) {
         return false;
