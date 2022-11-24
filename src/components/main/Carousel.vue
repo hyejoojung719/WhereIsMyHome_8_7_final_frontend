@@ -31,10 +31,10 @@ export default {
           src: require("@/assets/img/carousel1.png"),
         },
         {
-          src: require("@/assets/img/carousel1.png"),
+          src: require("@/assets/img/carousel2.png"),
         },
         {
-          src: require("@/assets/img/carousel1.png"),
+          src: require("@/assets/img/carousel3.png"),
         },
       ],
       status: false,
