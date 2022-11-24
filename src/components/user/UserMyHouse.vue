@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 export default {
   data() {
     return {
@@ -40,8 +40,32 @@ export default {
       items: [],
     };
   },
+  async created() {
+    await this.getMyApart();
+
+    let length = this.myHouses.length; // 개수
+    console.log("관심 아파트 개수 : ", length);
+    console.log("관심 아파트 정보 : ", this.myHouses);
+
+    let list = []; // list에서 정보 뽑아쓰면돼(아파트 이름, 주소만 담았어!)
+    for (let i = 0; i < this.myHouses.length; i++) {
+      await this.getAddr(this.myHouses[i].dongCode);
+      let item = {
+        apartmentName: this.myHouses[i].apartmentName,
+        address:
+          this.dongObj.sidoName + " " + this.dongObj.gugunName + " " + this.dongObj.dongName + this.myHouses[i].jibun,
+      };
+      list.push(item);
+    }
+
+    console.log("list : ", list);
+  },
   computed: {
+    ...mapState("mapStore", ["myHouses", "dongObj"]),
     ...mapState("userStore", ["userInfo"]),
+  },
+  methods: {
+    ...mapActions("mapStore", ["getMyApart", "getAddr"]),
   },
 };
 </script>
