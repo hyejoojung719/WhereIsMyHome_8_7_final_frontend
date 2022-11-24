@@ -57,7 +57,7 @@
             max-width="400"
             min-height="800"
             id="detail_card_content"
-            style="display: block"
+            :style="detailDisplay"
             color="rgba(255, 255, 255, 0)"
           >
             <template slot="progress">
@@ -75,12 +75,12 @@
 
             <div id="roadview" style="width: 100%; height: 300px"></div>
             <v-card-text>
-              <div class="text-right" style="display: block" id="emptyHeart">
+              <div class="text-right" :style="emptyHeartDisplay" id="emptyHeart">
                 <v-btn icon id="myHouseBtn" @click="addMyHouse"
                   ><font-awesome-icon icon="fa-regular fa-heart" class="fa-2x" style="color: red" />
                 </v-btn>
               </div>
-              <div class="text-right" style="display: none" id="fullHeart">
+              <div class="text-right" :style="fullHeartDisplay" id="fullHeart">
                 <v-btn icon id="myHouseBtn" @click="addMyHouse"
                   ><font-awesome-icon icon="fa-solid fa-heart" class="fa-2x" style="color: red" />
                 </v-btn>
@@ -93,15 +93,15 @@
 
             <v-divider class="mx-4"></v-divider>
 
-            <!-- <v-card-text>
+            <v-card-text>
               <v-chip-group active-class="secondary accent-4 white--text" column>
-                <v-chip @click="viewDetail1">실거래가</v-chip>
-                <v-chip @click="viewDetail2">매물 정보</v-chip>
+                <v-chip @click="viewDetail1">매물 정보</v-chip>
+                <v-chip @click="viewDetail2">거래 차트</v-chip>
               </v-chip-group>
-            </v-card-text> -->
+            </v-card-text>
 
             <div style="width: 100%">
-              <div id="detailInfo1" class="my-5">
+              <div id="detailInfo1" class="my-5" :style="detailChildDisplay2">
                 <v-sheet color="white">
                   <v-sparkline
                     :labels="labels"
@@ -117,7 +117,7 @@
                   </v-sparkline>
                 </v-sheet>
               </div>
-              <div id="detailInfo2">
+              <div id="detailInfo2" :style="detailChildDisplay1">
                 <v-data-table
                   dense
                   :headers="headers"
@@ -189,6 +189,23 @@ export default {
   },
   data() {
     return {
+      // 스타일 바인딩 --------------------------
+      detailDisplay: {
+        display: "none",
+      },
+      detailChildDisplay1: {
+        display: "block",
+      },
+      detailChildDisplay2: {
+        display: "none",
+      },
+      emptyHeartDisplay: {
+        display: "block",
+      },
+      fullHeartDisplay: {
+        display: "none",
+      },
+      //-------------------------------------
       // detailinfo1 start ----------------------
       search: "",
       page: 1,
@@ -254,6 +271,7 @@ export default {
     this.CLEAR_HOUSE_LIST();
     this.CLEAR_SCHOOL_LIST();
     this.CLEAR_BUS_LIST();
+    this.CLEAR_MYHOUSE_LIST();
     this.getSido(); // 시도 정보 가져오기
 
     // 관심 아파트 목록 가져오기
@@ -286,14 +304,14 @@ export default {
     ]),
 
     // detail card 관련============
-    // viewDetail1() {
-    //   document.getElementById("detailInfo1").style.display = "block";
-    //   document.getElementById("detailInfo2").style.display = "none";
-    // },
-    // viewDetail2() {
-    //   document.getElementById("detailInfo1").style.display = "none";
-    //   document.getElementById("detailInfo2").style.display = "block";
-    // },
+    viewDetail1() {
+      this.detailChildDisplay1.display = "block";
+      this.detailChildDisplay2.display = "none";
+    },
+    viewDetail2() {
+      this.detailChildDisplay1.display = "none";
+      this.detailChildDisplay2.display = "block";
+    },
 
     //=============================
 
@@ -374,7 +392,7 @@ export default {
     async initMap() {
       console.log("initMap() 호출");
       // 현재 위치 기준으로 표시
-      await this.currentLoc();
+      // await this.currentLoc();
 
       const container = document.getElementById("map");
       const options = {
@@ -554,8 +572,9 @@ export default {
       // console.log("house : ", house);
 
       // display 상태 설정======================================
-      let item = document.getElementById("detail_card_content");
-      item.style.display = "block";
+      // let item = document.getElementById("detail_card_content");
+      // item.style.display = "block";
+      this.detailDisplay.display = "block";
 
       // house 정보 가져오기 ===================================
       let dongCode = house.dongCode;
@@ -713,12 +732,12 @@ export default {
         // 관심 아파트 목록 가져오기 => 버튼 누를 때마다 갱신 해준다.
         this.getMyApart(this.userInfo.user_id);
 
-        if (document.getElementById("emptyHeart").style.display == "none") {
-          document.getElementById("emptyHeart").style.display = "block";
-          document.getElementById("fullHeart").style.display = "none";
+        if (this.emptyHeartDisplay.display == "none") {
+          this.emptyHeartDisplay.display = "block";
+          this.fullHeartDisplay.display = "none";
         } else {
-          document.getElementById("emptyHeart").style.display = "none";
-          document.getElementById("fullHeart").style.display = "block";
+          this.emptyHeartDisplay.display = "none";
+          this.fullHeartDisplay.display = "block";
         }
       }
     },
@@ -735,12 +754,12 @@ export default {
 
       if (flag) {
         // 찜목록에 있다면 => 하트를 꽉 찬 하트로
-        document.getElementById("emptyHeart").style.display = "none";
-        document.getElementById("fullHeart").style.display = "block";
+        this.emptyHeartDisplay.display = "none";
+        this.fullHeartDisplay.display = "block";
       } else {
         // 없다면 빈 하트로
-        document.getElementById("emptyHeart").style.display = "block";
-        document.getElementById("fullHeart").style.display = "none";
+        this.emptyHeartDisplay.display = "block";
+        this.fullHeartDisplay.display = "none";
       }
     },
 

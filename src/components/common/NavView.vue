@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar :color="isAdmin ? 'secondary accent-4' : 'primary accent-4'" dense dark>
+  <v-app-bar :color="isAdmin ? 'secondary accent-4' : 'primary accent-4'" dense dark fixed>
     <router-link :to="{ name: 'main' }"
       ><v-img src="@/assets/img/logo2.png" width="90px" class="ml-5"></v-img
     ></router-link>
@@ -7,9 +7,9 @@
     <router-link :to="{ name: 'apartList' }">
       <span class="white--text px-5">실거래가 조회</span>
     </router-link>
-    <router-link :to="{ name: 'home' }">
+    <!-- <router-link :to="{ name: 'home' }">
       <span class="white--text px-5">부동산 뉴스</span>
-    </router-link>
+    </router-link> -->
     <router-link :to="{ name: 'board' }">
       <span class="white--text px-5">공지사항</span>
     </router-link>

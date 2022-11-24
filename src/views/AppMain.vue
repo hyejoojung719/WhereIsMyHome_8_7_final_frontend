@@ -1,9 +1,17 @@
 <template>
-  <div>메인 페이지</div>
+  <div>
+    <Carousel></Carousel>
+    <Intro></Intro>
+    <News></News>
+  </div>
 </template>
 
 <script>
-export default {};
+import Carousel from "@/components/main/Carousel.vue";
+import Intro from "@/components/main/Intro.vue";
+import News from "@/components/main/News.vue";
+
+export default { components: { Carousel, Intro, News } };
 </script>
 
 <style></style>

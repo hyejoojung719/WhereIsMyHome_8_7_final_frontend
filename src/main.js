@@ -20,6 +20,9 @@ library.add(fas, far, fab);
 /* add font awesome icon component */
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 //==================================
+import AOS from "aos";
+import "aos/dist/aos.css";
+//===================
 
 Vue.config.productionTip = false;
 
@@ -28,4 +31,7 @@ new Vue({
   store,
   vuetify,
   render: (h) => h(App),
+  mounted() {
+    AOS.init();
+  },
 }).$mount("#app");

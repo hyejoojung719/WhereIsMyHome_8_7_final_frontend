@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app style="padding-top: 48px">
     <NavView />
     <router-view />
     <FooterView />

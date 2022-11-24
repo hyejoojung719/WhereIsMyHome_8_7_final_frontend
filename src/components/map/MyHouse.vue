@@ -35,7 +35,7 @@
             max-width="400"
             min-height="800"
             id="detail_card_content"
-            style="display: block"
+            :style="detailDisplay"
             color="rgba(255, 255, 255, 0)"
           >
             <template slot="progress">
@@ -71,15 +71,15 @@
 
             <v-divider class="mx-4"></v-divider>
 
-            <!-- <v-card-text>
+            <v-card-text>
               <v-chip-group active-class="secondary accent-4 white--text" column>
-                <v-chip @click="viewDetail1">실거래가</v-chip>
-                <v-chip @click="viewDetail2">매물 정보</v-chip>
+                <v-chip @click="viewDetail1">매물 정보</v-chip>
+                <v-chip @click="viewDetail2">거래 차트</v-chip>
               </v-chip-group>
-            </v-card-text> -->
+            </v-card-text>
 
             <div style="width: 100%">
-              <div id="detailInfo1" class="my-5">
+              <div id="detailInfo1" class="my-5" :style="detailChildDisplay2">
                 <v-sheet color="white">
                   <v-sparkline
                     :labels="labels"
@@ -95,7 +95,7 @@
                   </v-sparkline>
                 </v-sheet>
               </div>
-              <div id="detailInfo2">
+              <div id="detailInfo2" :style="detailChildDisplay1">
                 <v-data-table
                   dense
                   :headers="headers"
@@ -138,6 +138,17 @@ export default {
   //127.344307,
   data() {
     return {
+      // 스타일 바인딩 --------------------------
+      detailDisplay: {
+        display: "none",
+      },
+      detailChildDisplay1: {
+        display: "block",
+      },
+      detailChildDisplay2: {
+        display: "none",
+      },
+      //-------------------------------------
       // detailinfo1 start ----------------------
       search: "",
       page: 1,
@@ -192,6 +203,16 @@ export default {
       "getAmount",
     ]),
     ...mapMutations("mapStore", ["CLEAR_HOUSE_LIST", "CLEAR_MYHOUSE_LIST"]),
+
+    // detail card 관련============
+    viewDetail1() {
+      this.detailChildDisplay1.display = "block";
+      this.detailChildDisplay2.display = "none";
+    },
+    viewDetail2() {
+      this.detailChildDisplay1.display = "none";
+      this.detailChildDisplay2.display = "block";
+    },
 
     // 지도 표시
     async initMap() {
@@ -314,8 +335,9 @@ export default {
       // console.log("house : ", house);
 
       // display 상태 설정======================================
-      let item = document.getElementById("detail_card_content");
-      item.style.display = "block";
+      // let item = document.getElementById("detail_card_content");
+      // item.style.display = "block";
+      this.detailDisplay.display = "block";
 
       // house 정보 가져오기 ===================================
       let dongCode = house.dongCode;
