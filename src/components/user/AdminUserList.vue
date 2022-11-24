@@ -87,7 +87,7 @@ export default {
       });
       if (response) {
         alert("삭제 성공");
-        this.userList = await this.$store.dispatch("userStore/selectUserListAll");
+        this.userList = await this.$store.dispatch("userStore/selectUserListAll", this.$route.params);
       }
     },
   },
