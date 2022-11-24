@@ -1,3 +1,4 @@
+import store from "@/store";
 import Vue from "vue";
 import VueRouter from "vue-router";
 
@@ -134,6 +135,28 @@ const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
   routes,
+});
+
+router.beforeEach((/* 이동하려는 라우트 정보 */ to, from, next) => {
+  //라우팅 시 해당 라우트가 책관련 라우트이고
+  //유저정보를 갖고 있지 않다면
+  console.log(to.name, from.name);
+
+  let userCheck = ["myhouse", "mypage", "userMyPage", "userUpdateMyPage", "userDeleteMyPage", "userMyHouse"];
+  let adminCheck = ["admin", "adminUserList", "boardwrite", "boardmodify"];
+
+  if (userCheck.includes(to.name) && !store.state.userStore.userInfo.user_id) {
+    alert("로그인이 필요한 페이지입니다.");
+    return next({ name: "userSignIn" });
+  } else if (
+    adminCheck.includes(to.name) &&
+    (!store.state.userStore.userInfo.user_id || store.state.userStore.userInfo.user_role != "ADMIN")
+  ) {
+    alert("관리자만 볼 수 있는 페이지입니다.");
+    return next({ name: "main" });
+  }
+
+  next();
 });
 
 export default router;
