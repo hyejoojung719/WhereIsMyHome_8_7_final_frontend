@@ -56,6 +56,11 @@ const routes = [
         component: () => import("@/components/user/UserFindIdResult.vue"),
       },
       {
+        path: "findPassword",
+        name: "userFindPassword",
+        component: () => import("@/components/user/UserFindPassword.vue"),
+      },
+      {
         path: "signin",
         name: "userSignIn",
         component: () => import("@/components/user/UserSignIn.vue"),

@@ -21,7 +21,7 @@ v
         ><v-alert dense text type="success" style="width: 100%"> 선택한 아이디를 복사하였습니다. </v-alert></v-row
       >
       <v-row class="my-4 mx-10">
-        <v-btn class="secondary mx-auto" width="40%">비밀번호 찾기</v-btn>
+        <v-btn class="secondary mx-auto" width="40%" :to="{ name: 'userFindPassword' }">비밀번호 찾기</v-btn>
         <v-btn class="primary mx-auto" :to="{ name: 'userSignIn' }" width="40%">로그인</v-btn>
       </v-row>
     </v-col>

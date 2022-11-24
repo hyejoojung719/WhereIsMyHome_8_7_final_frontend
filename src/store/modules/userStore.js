@@ -136,6 +136,13 @@ const userStore = {
         return null;
       }
     },
+
+    //임시 비밀번호 생성 및 이메일 발송
+    async sendEmail(context, payload) {
+      if (payload == null) return null;
+      let { data } = await http.get("/users/find?user_id=" + payload.user_id);
+      return data;
+    },
   },
 };
 
