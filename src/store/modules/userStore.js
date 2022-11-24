@@ -126,8 +126,10 @@ const userStore = {
       }
     },
 
+    //아이디 확인
     async findId(context, payload) {
       try {
+        if (payload == null) return null;
         let { data } = await http.post("/users/find", payload);
         return data;
       } catch (error) {
