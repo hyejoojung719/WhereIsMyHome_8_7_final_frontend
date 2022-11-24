@@ -250,18 +250,7 @@ export default {
     };
   },
   computed: {
-    ...mapState("mapStore", [
-      "sidos",
-      "guguns",
-      "dongs",
-      "houses",
-      "schools",
-      "buses",
-      "myHouses",
-      "dongObj",
-      "detailApart",
-      "amounts",
-    ]),
+    ...mapState("mapStore", ["sidos", "guguns", "dongs", "houses", "myHouses", "dongObj", "detailApart", "amounts"]),
     ...mapState("userStore", ["userInfo"]),
   },
   async created() {
@@ -269,8 +258,6 @@ export default {
     this.CLEAR_GUGUN_LIST();
     this.CLEAR_DONG_LIST();
     this.CLEAR_HOUSE_LIST();
-    this.CLEAR_SCHOOL_LIST();
-    this.CLEAR_BUS_LIST();
     this.CLEAR_MYHOUSE_LIST();
     this.getSido(); // 시도 정보 가져오기
 
@@ -284,8 +271,6 @@ export default {
       "getDong",
       "getCurHouseList",
       "getHouseList",
-      "getCurSchool",
-      "getCurBus",
       "getByKeyword",
       "insertMyApart",
       "getMyApart",
@@ -298,8 +283,6 @@ export default {
       "CLEAR_GUGUN_LIST",
       "CLEAR_DONG_LIST",
       "CLEAR_HOUSE_LIST",
-      "CLEAR_SCHOOL_LIST",
-      "CLEAR_BUS_LIST",
       "CLEAR_MYHOUSE_LIST",
     ]),
 
@@ -486,10 +469,6 @@ export default {
       var imageSrc;
       if (txt == "house") {
         imageSrc = require("@/assets/img/house_marker.png");
-      } else if (txt == "school") {
-        imageSrc = require("@/assets/img/school_marker.png");
-      } else if (txt == "bus") {
-        imageSrc = require("@/assets/img/bus_marker.png");
       } else if (txt == "current") {
         imageSrc = require("@/assets/img/current_marker.png");
       } else if (txt == "pick") {
@@ -645,64 +624,6 @@ export default {
     closeDetailCard() {
       let item = document.getElementById("detail_card_content");
       item.style.display = "none";
-    },
-
-    // 학교 정보 가져오고 마커 표시하기 => 학교코드, 학교이름, 위도, 경도만 가져옴
-    async getSchoolInfo() {
-      if (this.houses != undefined) {
-        // houses에 값이 있다면, 즉 아파트 목록이 있다면
-        // 가장 첫 번쨰로 출력된 아파트 기준으로 위도, 경도 설정 후 반경 내에 있는 학교들을 불러온다.
-        let curLoc = {
-          lat: this.houses[0].lat,
-          lng: this.houses[0].lng,
-        };
-
-        await this.getCurSchool(curLoc);
-        this.markerParam.arr = this.schools;
-        this.markerParam.txt = "school";
-        this.displayMarkers(false);
-      } else {
-        // 검색을 안하거나, 검색결과 아파트 목록이 없다면
-        // alert창을 띄우고 현재 위치 기준으로 주변 학교들을 검색해준다.
-        let curLoc = {
-          lat: this.curlat,
-          lng: this.curlng,
-        };
-
-        await this.getCurSchool(curLoc);
-        this.markerParam.arr = this.schools;
-        this.markerParam.txt = "school";
-        this.displayMarkers(false);
-      }
-    },
-
-    // 버스 정보 가져오고 마커 표시하기 => 버스코드, 버스이름, 위도, 경도만 가져옴
-    async getBusInfo() {
-      if (this.houses != undefined) {
-        // houses에 값이 있다면, 즉 아파트 목록이 있다면
-        // 가장 첫 번쨰로 출력된 아파트 기준으로 위도, 경도 설정 후 반경 내에 있는 학교들을 불러온다.
-        let curLoc = {
-          lat: this.houses[0].lat,
-          lng: this.houses[0].lng,
-        };
-
-        await this.getCurBus(curLoc);
-        this.markerParam.arr = this.buses;
-        this.markerParam.txt = "bus";
-        this.displayMarkers(false);
-      } else {
-        // 검색을 안하거나, 검색결과 아파트 목록이 없다면
-        // alert창을 띄우고 현재 위치 기준으로 주변 학교들을 검색해준다.
-        let curLoc = {
-          lat: this.curlat,
-          lng: this.curlng,
-        };
-
-        await this.getCurBus(curLoc);
-        this.markerParam.arr = this.buses;
-        this.markerParam.txt = "bus";
-        this.displayMarkers(false);
-      }
     },
 
     // 아파트 이름으로 검색하기
