@@ -143,6 +143,22 @@ const userStore = {
       let { data } = await http.get("/users/find?user_id=" + payload.user_id);
       return data;
     },
+
+    //관리자 회원 정보 불러오기
+    async selectUserListAll() {
+      let { data } = await http.post("/users/admin/list", { user_id: "admin@ssafy.com" });
+      return data;
+    },
+
+    //관리자 회원 정보 삭제
+    async deleteUserList(context, payload) {
+      try {
+        await http.patch("/users/admin", payload);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    },
   },
 };
 
