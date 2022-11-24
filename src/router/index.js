@@ -51,6 +51,11 @@ const routes = [
         component: () => import("@/components/user/UserFindId.vue"),
       },
       {
+        path: "findIDResult",
+        name: "userFindIDResult",
+        component: () => import("@/components/user/UserFindIdResult.vue"),
+      },
+      {
         path: "signin",
         name: "userSignIn",
         component: () => import("@/components/user/UserSignIn.vue"),

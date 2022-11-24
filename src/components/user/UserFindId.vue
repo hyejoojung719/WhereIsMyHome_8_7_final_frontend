@@ -64,30 +64,12 @@ v
           </v-col>
         </v-row>
         <v-row class="my-6 mx-10">
-          <v-btn class="primary mx-auto" block @click="findIdResult">아이디 찾기</v-btn>
+          <v-btn class="primary mx-auto" block :to="{ name: 'userFindIDResult', params: { userInfo: userInfo } }"
+            >아이디 찾기</v-btn
+          >
         </v-row>
       </v-form>
     </v-col>
-    <v-dialog v-model="findIDdialog" scrollable max-width="500px">
-      <v-card>
-        <v-card-title> 아이디 찾기 결과 </v-card-title>
-        <v-card-text style="height: 100px">
-          <v-radio-group v-model="institutionSelected" column>
-            <v-radio
-              v-for="(institution, index) in itemInstitutions"
-              :key="index"
-              :label="institution"
-              :value="institution"
-            ></v-radio>
-          </v-radio-group>
-        </v-card-text>
-
-        <v-card-actions>
-          <v-btn color="primary" text @click="findIDdialog = false"> Close </v-btn>
-          <v-btn color="primary" text @click="copyToClipBoard"> Copy </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
   </v-container>
 </template>
 
@@ -99,9 +81,6 @@ export default {
       userInfo: {},
       today: new Date().toISOString().substr(0, 10),
       menu: false,
-      findIDdialog: false,
-      itemInstitutions: ["Two-line item", "another item"],
-      institutionSelected: "",
     };
   },
   computed: {
@@ -112,16 +91,6 @@ export default {
       this.userInfo.user_birth = v;
       this.menu = false;
       this.$refs.birthmenu.save(v);
-    },
-    async findIdResult() {
-      let response = await this.$store.dispatch("userStore/findId", this.userInfo);
-      console.log(response);
-      this.findIDdialog = true;
-    },
-
-    copyToClipBoard() {
-      this.findIDdialog = false;
-      navigator.clipboard.writeText(this.institutionSelected);
     },
   },
 };
