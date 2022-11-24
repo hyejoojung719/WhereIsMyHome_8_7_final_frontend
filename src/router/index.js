@@ -138,9 +138,7 @@ const router = new VueRouter({
 });
 
 router.beforeEach((/* 이동하려는 라우트 정보 */ to, from, next) => {
-  //라우팅 시 해당 라우트가 책관련 라우트이고
   //유저정보를 갖고 있지 않다면
-  console.log(to.name, from.name);
 
   let userCheck = ["myhouse", "mypage", "userMyPage", "userUpdateMyPage", "userDeleteMyPage", "userMyHouse"];
   let adminCheck = ["admin", "adminUserList", "boardwrite", "boardmodify"];
