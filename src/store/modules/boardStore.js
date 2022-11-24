@@ -22,7 +22,9 @@ const boardStore = {
     async getBoards({ commit }) {
       try {
         const { data } = await http.get("/board/list");
-        commit("SET_BOARDS", data);
+        if (data == "") {
+          commit("SET_BOARDS", []);
+        } else commit("SET_BOARDS", data);
       } catch (error) {
         console.log(error);
       }

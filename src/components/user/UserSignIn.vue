@@ -47,7 +47,7 @@
             </v-row>
             <v-row class="text-center">
               <v-btn class="btns" text :to="{ name: 'userFindID' }">이메일 찾기</v-btn> |
-              <v-btn class="btns" text>비밀번호 찾기</v-btn> |
+              <v-btn class="btns" text :to="{ name: 'userFindPassword' }">비밀번호 찾기</v-btn> |
               <v-btn class="btns" text :to="{ name: 'userSignUp' }">회원가입</v-btn>
             </v-row>
           </v-col>
