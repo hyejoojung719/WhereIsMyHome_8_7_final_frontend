@@ -49,7 +49,7 @@ export default {
 
     //myHouses : 관심 아파트 목록 전체
     // let list = []; // list(아파트 이름, 주소만 담았어!)
-    for (let i = 0; i < this.myHouses.length; i++) {
+    for (let i = this.myHouses.length - 1; i >= 0; i--) {
       await this.getAddr(this.myHouses[i].dongCode);
       let item = {
         apartmentName: this.myHouses[i].apartmentName,
