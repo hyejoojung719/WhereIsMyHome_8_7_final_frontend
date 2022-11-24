@@ -3,6 +3,7 @@ import store from "@/store";
 
 let instance = axios.create({
   baseURL: "http://localhost:9000/house",
+  // baseURL: "http://192.168.130.74:9000/house",
 });
 
 //axios 요청 보내기 전 인터셉터
