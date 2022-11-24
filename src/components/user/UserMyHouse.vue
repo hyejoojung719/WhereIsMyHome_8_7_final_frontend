@@ -9,10 +9,10 @@
           style="width: 80%; height: 80%; justify-content: center; align-items: center; flex-direction: column"
         >
           <v-card-title
-            ><h3>{{ userInfo.user_name }} 님의 관심 아파트는 총 8개입니다.</h3></v-card-title
+            ><h3>{{ userInfo.user_name }} 님의 관심 아파트는 총 {{ myHouses.length }}개입니다.</h3></v-card-title
           >
           <v-card-actions style="width: 60%">
-            <v-btn color="primary" block>관심 아파트 자세히 보기</v-btn>
+            <v-btn color="primary" block :to="{ name: 'myhouse' }">관심 아파트 자세히 보기</v-btn>
           </v-card-actions>
         </v-card>
       </v-row>
@@ -21,7 +21,10 @@
         <v-row v-for="x in 2" :key="x + 'row'">
           <v-col v-for="y in 3" :key="y + 'col'">
             <v-item>
-              <v-card color="secondary" class="d-flex align-center" dark height="100">{{ x * 3 + y - 3 }}</v-card>
+              <v-card color="secondary" class="d-flex align-left" style="flex-direction: column" dark height="100">
+                <v-card-title>{{ items[x * 3 + y - 3].apartmentName }}</v-card-title>
+                <v-card-subtitle>{{ items[x * 3 + y - 3].address }}</v-card-subtitle>
+              </v-card>
             </v-item>
           </v-col>
         </v-row>
@@ -38,16 +41,14 @@ export default {
       user: {},
       isMember: true,
       items: [],
+      length: 0,
     };
   },
   async created() {
     await this.getMyApart();
 
-    let length = this.myHouses.length; // 개수
-    console.log("관심 아파트 개수 : ", length);
-    console.log("관심 아파트 정보 : ", this.myHouses);
-
-    let list = []; // list에서 정보 뽑아쓰면돼(아파트 이름, 주소만 담았어!)
+    //myHouses : 관심 아파트 목록 전체
+    // let list = []; // list(아파트 이름, 주소만 담았어!)
     for (let i = 0; i < this.myHouses.length; i++) {
       await this.getAddr(this.myHouses[i].dongCode);
       let item = {
@@ -55,10 +56,10 @@ export default {
         address:
           this.dongObj.sidoName + " " + this.dongObj.gugunName + " " + this.dongObj.dongName + this.myHouses[i].jibun,
       };
-      list.push(item);
+      this.items.push(item);
     }
 
-    console.log("list : ", list);
+    console.log("list : ", this.items);
   },
   computed: {
     ...mapState("mapStore", ["myHouses", "dongObj"]),
