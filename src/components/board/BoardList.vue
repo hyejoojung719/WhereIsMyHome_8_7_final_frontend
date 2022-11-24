@@ -24,6 +24,7 @@
           @page-count="pageCount = $event"
           @click:row="moveView"
         >
+          <template v-slot:no-data> 작성된 글이 없습니다. </template>
         </v-data-table>
         <div class="text-right">
           <v-btn depressed color="secondary" class="my-5 mx-5" @click="moveWrite" v-if="userInfo.user_role === 'ADMIN'">
@@ -52,7 +53,6 @@ export default {
         {
           text: "글 번호",
           align: "start",
-          filterable: false,
           value: "articleNo",
         },
         { text: "제목", value: "subject" },
@@ -60,15 +60,14 @@ export default {
         { text: "조회수", value: "hit" },
         { text: "작성 시간", value: "registerTime" },
       ],
-      notices: [
-        // {
-        //   articleNo: 1,
-        //   subject: "제목1",
-        //   userId: "작성자1",
-        //   hit: 0,
-        //   register_time: 2022,
-        // },
-      ],
+      // {
+      //   articleNo: 1,
+      //   subject: "제목1",
+      //   userId: "작성자1",
+      //   hit: 0,
+      //   register_time: 2022,
+      // },
+      notices: [],
     };
   },
   computed: {
@@ -77,7 +76,7 @@ export default {
   },
   async created() {
     await this.getBoards();
-
+    console.log("vue : ", this.boards);
     this.notices = this.boards;
   },
   methods: {

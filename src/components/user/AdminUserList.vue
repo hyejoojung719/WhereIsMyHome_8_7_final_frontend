@@ -1,139 +1,108 @@
 <template>
   <div id="app">
     <v-app id="inspire">
-      <v-card>
-        <v-card-title
-          >회원 관리
-          <v-spacer></v-spacer>
-          <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            label="Search"
-            single-line
-            hide-details
-          ></v-text-field
-        ></v-card-title>
-
+      <v-card class="mx-16 my-16 px-16 py-16">
+        <v-card-title>
+          <div style="width: 200px; padding-bottom: 20px">
+            <v-text-field
+              v-model="search"
+              append-icon="mdi-magnify"
+              label="Search"
+              single-line
+              hide-details
+            ></v-text-field>
+          </div>
+        </v-card-title>
         <v-data-table
-          v-model="selected"
           :headers="headers"
-          :items="desserts"
+          :items="notices"
           :search="search"
-          item-key="name"
-          show-select
+          :page.sync="page"
+          :items-per-page="itemsPerPage"
+          hide-default-footer
           class="elevation-1"
+          @page-count="pageCount = $event"
+          @click:row="moveView"
         >
+          <template v-slot:no-data> 작성된 글이 없습니다. </template>
         </v-data-table>
+        <div class="text-right">
+          <v-btn depressed color="secondary" class="my-5 mx-5" @click="moveWrite" v-if="userInfo.user_role === 'ADMIN'">
+            글 작성
+          </v-btn>
+        </div>
+        <div class="text-center pt-2">
+          <v-pagination v-model="page" :length="pageCount" color="primary"></v-pagination>
+        </div>
       </v-card>
     </v-app>
   </div>
 </template>
 
 <script>
+import { mapState, mapActions } from "vuex";
+
 export default {
   data() {
     return {
       search: "",
-      selected: [],
+      page: 1,
+      pageCount: 0,
+      itemsPerPage: 10,
       headers: [
         {
-          text: "Dessert (100g serving)",
+          text: "글 번호",
           align: "start",
-          sortable: false,
-          value: "name",
+          value: "articleNo",
         },
-        { text: "Calories", value: "calories" },
-        { text: "Fat (g)", value: "fat" },
-        { text: "Carbs (g)", value: "carbs" },
-        { text: "Protein (g)", value: "protein" },
-        { text: "Irons (%)", value: "iron" },
-        { text: "", value: "data-table-select" },
+        { text: "제목", value: "subject" },
+        { text: "작성자", value: "userId" },
+        { text: "조회수", value: "hit" },
+        { text: "작성 시간", value: "registerTime" },
       ],
-      desserts: [
-        {
-          name: "Frozen Yogurt",
-          calories: 159,
-          fat: 6.0,
-          carbs: 24,
-          protein: 4.0,
-          iron: "1%",
-        },
-        {
-          name: "Ice cream sandwich",
-          calories: 237,
-          fat: 9.0,
-          carbs: 37,
-          protein: 4.3,
-          iron: "1%",
-        },
-        {
-          name: "Eclair",
-          calories: 262,
-          fat: 16.0,
-          carbs: 23,
-          protein: 6.0,
-          iron: "7%",
-        },
-        {
-          name: "Cupcake",
-          calories: 305,
-          fat: 3.7,
-          carbs: 67,
-          protein: 4.3,
-          iron: "8%",
-        },
-        {
-          name: "Gingerbread",
-          calories: 356,
-          fat: 16.0,
-          carbs: 49,
-          protein: 3.9,
-          iron: "16%",
-        },
-        {
-          name: "Jelly bean",
-          calories: 375,
-          fat: 0.0,
-          carbs: 94,
-          protein: 0.0,
-          iron: "0%",
-        },
-        {
-          name: "Lollipop",
-          calories: 392,
-          fat: 0.2,
-          carbs: 98,
-          protein: 0,
-          iron: "2%",
-        },
-        {
-          name: "Honeycomb",
-          calories: 408,
-          fat: 3.2,
-          carbs: 87,
-          protein: 6.5,
-          iron: "45%",
-        },
-        {
-          name: "Donut",
-          calories: 452,
-          fat: 25.0,
-          carbs: 51,
-          protein: 4.9,
-          iron: "22%",
-        },
-        {
-          name: "KitKat",
-          calories: 518,
-          fat: 26.0,
-          carbs: 65,
-          protein: 7,
-          iron: "6%",
-        },
-      ],
+      // {
+      //   articleNo: 1,
+      //   subject: "제목1",
+      //   userId: "작성자1",
+      //   hit: 0,
+      //   register_time: 2022,
+      // },
+      notices: [],
     };
+  },
+  computed: {
+    ...mapState("boardStore", ["boards"]),
+    ...mapState("userStore", ["userInfo"]),
+  },
+  async created() {
+    await this.getBoards();
+    console.log("vue : ", this.boards);
+    this.notices = this.boards;
+  },
+  methods: {
+    ...mapActions("boardStore", ["getBoards"]),
+    moveWrite() {
+      this.$router.push({ name: "boardwrite" });
+    },
+    moveView(item) {
+      this.$router.push({
+        name: "boardview",
+        params: { articleNo: item.articleNo },
+      });
+    },
   },
 };
 </script>
 
-<style></style>
+<style scoped>
+::v-deep .v-sheet.v-card:not(.v-sheet--outlined) {
+  box-shadow: none !important;
+}
+
+::v-deep tbody > tr:hover {
+  cursor: pointer;
+}
+/* ::v-deep .v-card__title {
+  padding: 50px;
+} */
+</style>
