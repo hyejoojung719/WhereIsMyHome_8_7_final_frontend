@@ -8,8 +8,6 @@ const mapStore = {
     guguns: [{ value: null, text: "구/군" }],
     dongs: [{ value: null, text: "동" }],
     houses: [],
-    schools: [],
-    buses: [],
     myHouses: [],
     dongObj: {},
     detailApart: {},
@@ -42,12 +40,6 @@ const mapStore = {
     SET_HOUSE_LIST(state, houses) {
       state.houses = houses;
     },
-    SET_SCHOOL_LIST(state, schools) {
-      state.schools = schools;
-    },
-    SET_BUS_LIST(state, buses) {
-      state.buses = buses;
-    },
     SET_MYHOUSE_LIST(state, myHouses) {
       state.myHouses = myHouses;
     },
@@ -67,12 +59,6 @@ const mapStore = {
     },
     CLEAR_HOUSE_LIST(state) {
       state.houses = [];
-    },
-    CLEAR_SCHOOL_LIST(state) {
-      state.schools = [];
-    },
-    CLEAR_BUS_LIST(state) {
-      state.buses = [];
     },
     CLEAR_MYHOUSE_LIST(state) {
       state.myHouses = [];
@@ -177,34 +163,6 @@ const mapStore = {
         let { data } = await http.get(`/apart/apartInfo`, { params });
         // console.log("검색 버튼 누르고 data : ", data);
         commit("SET_HOUSE_LIST", data[0]);
-      } catch (error) {
-        console.log(error);
-      }
-    },
-
-    // 학교 정보 가져오기
-    async getCurSchool({ commit }, curLoc) {
-      const params = {
-        curlat: curLoc.lat,
-        curlng: curLoc.lng,
-      };
-      try {
-        let { data } = await http.get(`/infra/school`, { params });
-        commit("SET_SCHOOL_LIST", data);
-      } catch (error) {
-        console.log(error);
-      }
-    },
-
-    // 버스정류장 정보 가져오기
-    async getCurBus({ commit }, curLoc) {
-      const params = {
-        curlat: curLoc.lat,
-        curlng: curLoc.lng,
-      };
-      try {
-        let { data } = await http.get(`/infra/bus`, { params });
-        commit("SET_BUS_LIST", data);
       } catch (error) {
         console.log(error);
       }
