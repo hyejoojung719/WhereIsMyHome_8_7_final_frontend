@@ -145,15 +145,15 @@ const userStore = {
     },
 
     //관리자 회원 정보 불러오기
-    async selectUserListAll() {
-      let { data } = await http.post("/users/admin/list", { user_id: "admin@ssafy.com" });
+    async selectUserListAll(context, payload) {
+      let { data } = await http.post("/users/admin/list", payload); //user_id 존재
       return data;
     },
 
     //관리자 회원 정보 삭제
     async deleteUserList(context, payload) {
       try {
-        await http.patch("/users/admin", payload);
+        await http.patch("/users/admin", payload); //payload에 선택된 값(selected), user_id값 존재
         return true;
       } catch (error) {
         return false;

@@ -91,6 +91,11 @@ const routes = [
             name: "userDeleteMyPage",
             component: () => import("@/components/user/UserDeleteMyPage.vue"),
           },
+          {
+            path: "myhouse",
+            name: "userMyHouse",
+            component: () => import("@/components/user/UserMyHouse.vue"),
+          },
         ],
       },
     ],

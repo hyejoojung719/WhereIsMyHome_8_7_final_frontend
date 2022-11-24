@@ -13,7 +13,9 @@
     <router-link :to="{ name: 'board' }">
       <span class="white--text px-5">공지사항</span>
     </router-link>
-    <router-link :to="{ name: 'adminUserList' }" v-if="userInfo.user_role === 'ADMIN'"
+    <router-link
+      :to="{ name: 'adminUserList', params: { user_id: userInfo.user_id } }"
+      v-if="userInfo.user_role === 'ADMIN'"
       ><span class="white--text px-5">회원 관리</span></router-link
     >
     <router-link :to="{ name: 'userSignIn' }" v-if="!!!userInfo.user_id">

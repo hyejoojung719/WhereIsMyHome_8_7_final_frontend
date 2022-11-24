@@ -75,13 +75,16 @@ export default {
     };
   },
   async created() {
-    let response = await this.$store.dispatch("userStore/selectUserListAll");
+    let response = await this.$store.dispatch("userStore/selectUserListAll", this.$route.params);
     this.userList = response;
   },
   methods: {
     async deleteUserList() {
       console.log(this.selected);
-      let response = await this.$store.dispatch("userStore/deleteUserList", this.selected);
+      let response = await this.$store.dispatch("userStore/deleteUserList", {
+        selected: this.selected,
+        user_id: this.$route.params.user_id,
+      });
       if (response) {
         alert("삭제 성공");
         this.userList = await this.$store.dispatch("userStore/selectUserListAll");

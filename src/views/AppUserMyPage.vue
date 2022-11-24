@@ -24,7 +24,7 @@
             </v-sheet>
           </v-col>
 
-          <v-col>
+          <v-col cols="10">
             <router-view></router-view>
           </v-col>
         </v-row>
@@ -48,7 +48,7 @@ export default {
         { title: "내 정보", link: "userMyPage" },
         { title: "회원 정보 수정", link: "userUpdateMyPage" },
         { title: "회원 정보 삭제", link: "userDeleteMyPage" },
-        { title: "관심 아파트 정보", link: "userSignUp" },
+        { title: "관심 아파트 정보", link: "userMyHouse" },
       ],
     };
   },
