@@ -2,7 +2,11 @@ const ruleStore = {
   namespaced: true,
   state: () => ({
     //Rules
-    emailRules: [(v) => !!v || "이메일을 입력하세요.", (v) => /.+@.+/.test(v) || "올바르지 않은 이메일입니다."],
+    emailRules: [
+      (v) => !!v || "이메일을 입력하세요.",
+      (v) => (v && v.length >= 8 && v.length <= 20) || "이메일은 8자 이상 20자 이하입니다.",
+      (v) => /.+@.+/.test(v) || "올바르지 않은 이메일입니다.",
+    ],
     passwordRules: [
       (v) => !!v || "비밀번호를 입력하세요.",
       (v) => (v && v.length >= 8 && v.length <= 15) || "비밀번호는 8자 이상 15자 이하입니다.",
